@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Form, Button } from 'react-bootstrap';
-import './Login.css';
+import { Form, Button, Col } from 'react-bootstrap';
 
 class Login extends Component {
   // TODO: validate input onSubmit
@@ -14,14 +13,17 @@ class Login extends Component {
           <img src="/logo.png" alt="Logo"/>
         </div>
 
-        <div className="header-container">
+        <div className="form-header-container">
           <h5>Sign up</h5>
         </div>
 
-        <Form className="signup-form">
-          <Form.Group id="formGridCheckbox">
+        <Form id="signup-form">
+          <Form.Group id="formGrid">
             <Form.Control autoFocus required type="email" placeholder="Email" />
-            <Form.Control required type="username" placeholder="Username" />
+            <Form.Row>
+              <Col> <Form.Control required placeholder="First name" /> </Col>
+              <Col> <Form.Control required placeholder="Last name" /> </Col>
+            </Form.Row>
             <Form.Control required type="password" placeholder="Password" />
           </Form.Group>
           <Button variant="primary" type="submit">
