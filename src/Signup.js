@@ -9,14 +9,17 @@ class Login extends Component {
   render() {
     return (
       <div className="login">
+        {/* logo */}
         <div className="logo-container">
           <img src="/logo.png" alt="Logo"/>
         </div>
 
+        { /* header */ }
         <div className="form-header-container">
           <h5>Sign up</h5>
         </div>
 
+        {/* Sign up form */}
         <Form id="signup-form">
           <Form.Group id="formGrid">
             <Form.Control autoFocus required type="email" placeholder="Email" />
@@ -31,6 +34,7 @@ class Login extends Component {
           </Button>
         </Form>
 
+        {/* Sign in link in the bottom */}
         <div className="link-container">
           <Link className="text-secondary" to="/">Sign in here</Link>
         </div>
