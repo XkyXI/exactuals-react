@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
-import Routes from "../Routes";
 
 class MainContent extends Component {
   render() {
     return (
       <div className="dashboard">
         {/* TODO: replace content with acutal content */}
-        <h5>Dashboard Content</h5>
+        <h5>Dashboard</h5>
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
           Cras posuere sagittis dui. Proin in tortor et ligula commodo 
           faucibus et sed arcu. In hendrerit ante eu lorem tristique eleifend. 

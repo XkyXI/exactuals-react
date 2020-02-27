@@ -1,10 +1,21 @@
 import React from "react";
+import { Route } from "react-router-dom";
 import Sidebar from "react-sidebar";
+
 import DBSidebar from "./SidebarContent";
-import DBContent from "./MainContent";
+import DBContent from "./DashboardContent";
+import InviteContent from "./InviteContent";
+import SendContent from "./SendContent";
 
 // min-width: the window width is greater than X px
 const mql = window.matchMedia(`(min-width: 700px)`);
+
+// url paths
+const paths = {
+  home: "/dashboard/home",
+  invite: "/dashboard/invite",
+  send: "/dashboard/send"
+}
 
 class Dashboard extends React.Component {
   constructor(props) {
@@ -40,7 +51,7 @@ class Dashboard extends React.Component {
   render() {
     return (
       <Sidebar
-        sidebar={<DBSidebar name="Ilie"/>} 
+        sidebar={<DBSidebar name="Ilie" paths={paths}/>} 
         open={this.state.sidebarOpen}
         docked={this.state.sidebarDocked}
         onSetOpen={this.onSetSidebarOpen}
@@ -48,7 +59,9 @@ class Dashboard extends React.Component {
         shadow={false}
         styles={overrideDefaultStyles}
       >
-        <DBContent />
+        <Route path={paths.home} exact component={DBContent} />
+        <Route path={paths.invite} exact component={InviteContent} />
+        <Route path={paths.send} exact component={SendContent} />
       </Sidebar>
     );
   }

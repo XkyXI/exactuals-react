@@ -6,19 +6,22 @@
   max-width: 150px;
 }
 
-#sidebar-wrapper .sidebar-heading {
-  padding: 0.875rem;
-  font-size: 1.2rem;
-  background-color: #fff;
-  text-align: center;
-  
-  img {
-    max-width: 3rem;
-  }
-  a {
+#sidebar-wrapper {
+  > a {
     color: #333;
+    &:hover {
+      text-decoration: none;
+    }
   }
-  a:hover {
-    text-decoration: none;
+
+  .sidebar-heading {
+    padding: 0.875rem;
+    font-size: 1.2rem;
+    background-color: #fff;
+    text-align: center;
+    
+    img {
+      max-width: 3rem;
+    }
   }
 }
