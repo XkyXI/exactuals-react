@@ -2,20 +2,22 @@ import React from "react";
 import { Route } from "react-router-dom";
 import Sidebar from "react-sidebar";
 
-import DBSidebar from "./SidebarContent";
-import DBContent from "./DashboardContent";
-import InviteContent from "./InviteContent";
-import SendContent from "./SendContent";
+import DBSidebar from "./Dashboard/SidebarContent";
+import DBNavbar from "./Dashboard/DashboardNavbar";
+import DBContent from "./Dashboard/DashboardContent";
+import InviteContent from "./Dashboard/InviteContent";
+import SendContent from "./Dashboard/SendContent";
 
 // min-width: the window width is greater than X px
 const mql = window.matchMedia(`(min-width: 700px)`);
 
 // url paths
-const paths = {
+const sidebarPaths = {
   home: "/dashboard/home",
   invite: "/dashboard/invite",
   send: "/dashboard/send"
 }
+
 
 class Dashboard extends React.Component {
   constructor(props) {
@@ -51,17 +53,22 @@ class Dashboard extends React.Component {
   render() {
     return (
       <Sidebar
-        sidebar={<DBSidebar name="Ilie" paths={paths}/>} 
+        sidebar={<DBSidebar paths={sidebarPaths} />} 
         open={this.state.sidebarOpen}
         docked={this.state.sidebarDocked}
         onSetOpen={this.onSetSidebarOpen}
-        sidebarId="db-sidebar"
         shadow={false}
         styles={overrideDefaultStyles}
+
+        sidebarId="db-sidebar"
+        contentClassName={this.state.sidebarDocked ? "sidebar-docked" : "sidebar-collapsed"}
       >
-        <Route path={paths.home} exact component={DBContent} />
-        <Route path={paths.invite} exact component={InviteContent} />
-        <Route path={paths.send} exact component={SendContent} />
+        <DBNavbar name="User" openSidebar={this.onSetSidebarOpen} />
+
+        <Route path={sidebarPaths.home} exact component={DBContent} />
+        <Route path={sidebarPaths.invite} exact component={InviteContent} />
+        <Route path={sidebarPaths.send} exact component={SendContent} />
+        {/* TODO: consider using map */}
       </Sidebar>
     );
   }
@@ -72,7 +79,7 @@ export default Dashboard;
 // styles for overriding the default styles
 const overrideDefaultStyles = {
   sidebar: {
-    transition: "transform .1s ease-out", // default is .3s
-    WebkitTransition: "-webkit-transform .1s ease-out",
+    transition: "transform .2s ease-out", // default is .3s
+    WebkitTransition: "-webkit-transform .2s ease-out",
   }
 }

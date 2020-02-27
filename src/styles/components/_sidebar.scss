@@ -4,9 +4,7 @@
 
 #sidebar-wrapper {
   max-width: 150px;
-}
 
-#sidebar-wrapper {
   > a {
     color: #333;
     &:hover {
@@ -19,9 +17,11 @@
     font-size: 1.2rem;
     background-color: #fff;
     text-align: center;
-    
+    max-height: 56px;
+
     img {
-      max-width: 3rem;
+      max-height: 100%;
+      max-width: 100%;
     }
   }
 }
