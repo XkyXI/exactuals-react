@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from "react-router-dom";
 import { NavDropdown, Nav, Navbar } from "react-bootstrap";
+import { LinkContainer } from "react-router-bootstrap";
 
 class DashboardNavbar extends Component {
   constructor(props) {
@@ -27,7 +28,7 @@ class DashboardNavbar extends Component {
               <Link to="/dashboard/home" className="dropdown-item">Profile</Link>
               <Link to="/dashboard/home" className="dropdown-item">Settings</Link>
             </NavDropdown>
-            <Nav.Link href="/">Sign out</Nav.Link>
+            <Link to="/" className="nav-link">Sign out</Link>
           </Nav>
         </Navbar.Collapse>
 

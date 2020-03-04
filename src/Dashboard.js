@@ -14,8 +14,10 @@ const mql = window.matchMedia(`(min-width: 700px)`);
 // url paths
 const sidebarPaths = {
   home: "/dashboard/home",
-  invite: "/dashboard/invite",
-  send: "/dashboard/send"
+  payee_invite: "/dashboard/payee/invite",
+  payee_manage: "/dashboard/payee/manage",
+  payment_send: "/dashboard/payment/send",
+  payment_manage: "/dashboard/payment/manage",
 }
 
 
@@ -65,9 +67,14 @@ class Dashboard extends React.Component {
       >
         <DBNavbar name="User" openSidebar={this.onSetSidebarOpen} />
 
+        {/* Base on different path, router-dom will render different component */}
         <Route path={sidebarPaths.home} exact component={DBContent} />
-        <Route path={sidebarPaths.invite} exact component={InviteContent} />
-        <Route path={sidebarPaths.send} exact component={SendContent} />
+
+        <Route path={sidebarPaths.payee_invite} exact component={InviteContent} />
+        <Route path={sidebarPaths.payee_manage} exact component={SendContent} />
+
+        <Route path={sidebarPaths.payment_send} exact component={InviteContent} />
+        <Route path={sidebarPaths.payment_manage} exact component={SendContent} />
         {/* TODO: consider using map */}
       </Sidebar>
     );
