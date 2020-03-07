@@ -1,19 +1,47 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Form, Button } from 'react-bootstrap';
+import { Form, Alert } from 'react-bootstrap';
 
-// only for developmental purposes, must remove when in production
-const users = ["admin"];
+import LoadingButton from './components/LoadingButton';
+
+const USER_API = "http://localhost:8000/user/"
 
 class Login extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      isLoading: false,
+      displayError: false,
+      errorMessage: ""
+    };
+
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  fakeValidateUserPass(username, password) {
+  signin(username, password) {
     // TODO: validate username and password by making a request
-    return users.includes(username) && password;
+    // TODO: give feedback of loading status
+    // TODO: provide more useful error messages
+    // TODO: persistent login on refresh
+
+    this.setState({ isLoading: true });
+    fetch(USER_API + username)
+    .then(response => {
+      if (response.ok) return response.json();
+      else this.setState({ displayError: true });
+    })
+    .then(data => { 
+      if (data.first_name) {
+        this.setState({ isLoading: false });
+        this.props.appProps.setAuthenticated(true);
+        this.props.appProps.setUsername(data.first_name);
+        this.props.history.push("/dashboard/home");
+      }
+    })
+    .catch(err => { 
+      console.log("error: " + err);
+      this.setState({ displayError: true, isLoading: false, errorMessage: String(err) });
+    });
   }
 
   // To handle user submitting the form
@@ -23,12 +51,12 @@ class Login extends Component {
     let password = e.target.password.value;
     // let remember = e.target.remember.checked;
 
-    if (this.fakeValidateUserPass(username, password)) {
-      this.props.history.push("/dashboard/home");
-    }
+    this.signin(username, password);
   }
 
   render() {
+    const { displayError, errorMessage, isLoading } = this.state;
+
     return (
       <div className="login">
         {/* logo */}
@@ -41,6 +69,10 @@ class Login extends Component {
           <h5>Sign in</h5>
         </div>
 
+        {/* Displays an error message when username/password validation failed */}
+        { displayError && 
+         <Alert variant="danger"> {errorMessage} </Alert> }
+
         { /* Sign in form */ }
         <Form id="login-form" onSubmit={this.handleSubmit}>
           <Form.Control autoFocus required type="text" placeholder="Username" name="username" />
@@ -49,9 +81,9 @@ class Login extends Component {
             <Form.Check type="checkbox" label="Remember me" name="remember" />
           </Form.Group>
 
-          <Button variant="primary" type="submit">
+          <LoadingButton isLoading={isLoading} variant="primary" type="submit">
             Sign in
-          </Button>
+          </LoadingButton>
         </Form>
 
         {/* sign up link in the bottom */}

@@ -1,12 +1,31 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Form, Button, Col } from 'react-bootstrap';
+import { Form, Button, Col, Alert } from 'react-bootstrap';
+
+import LoadingButton from './components/LoadingButton';
 
 class Login extends Component {
   // TODO: validate input onSubmit
   // TODO: POST on submit
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      isLoading: false,
+      message: false
+    };
+
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  handleSubmit(e) {
+    e.preventDefault();
+    this.setState({ message: true });
+  }
+
   render() {
+    const { isLoading, message } = this.state;
+
     return (
       <div className="login">
         {/* logo */}
@@ -19,8 +38,11 @@ class Login extends Component {
           <h5>Sign up</h5>
         </div>
 
+        { message &&
+         <Alert variant="warning"> Sign up not available! </Alert> }
+
         {/* Sign up form */}
-        <Form id="signup-form">
+        <Form id="signup-form" onSubmit={this.handleSubmit}>
           <Form.Group id="formGrid">
             <Form.Control autoFocus required type="email" placeholder="Email" />
             <Form.Row>
@@ -29,9 +51,9 @@ class Login extends Component {
             </Form.Row>
             <Form.Control required type="password" placeholder="Password" />
           </Form.Group>
-          <Button variant="primary" type="submit">
-            Sign up
-          </Button>
+          <LoadingButton isLoading={isLoading} variant="primary" type="submit">
+            Sign in
+          </LoadingButton>
         </Form>
 
         {/* Sign in link in the bottom */}

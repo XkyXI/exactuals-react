@@ -1,12 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import Routes from "./Routes";
 
-function App() {
+export default function App() {
+  const [ isAuthenticated, setAuthenticated ] = useState(false);
+  const [ username, setUsername ] = useState("");
+
   return (
     <div className="app container">
-      <Routes />
+      <Routes appProps={{ isAuthenticated, setAuthenticated, username, setUsername }}/>
     </div>
   );
 }
-
-export default App;

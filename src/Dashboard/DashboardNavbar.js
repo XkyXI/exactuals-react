@@ -7,6 +7,7 @@ class DashboardNavbar extends Component {
   constructor(props) {
     super(props);
     this.onToggle = this.onToggle.bind(this);
+    this.onSignOut = this.onSignOut.bind(this);
   }
 
   onToggle(e) {
@@ -14,12 +15,18 @@ class DashboardNavbar extends Component {
     this.props.openSidebar(true);
   }
 
+  onSignOut(e) {
+    e.preventDefault();
+    this.props.appProps.setAuthenticated(false);
+    this.props.history.push("/");
+  }
+
   render() {
     return (
       <Navbar bg="white" className="db-navbar">
 
-        <button class="navbar-toggler" type="button" onClick={this.onToggle}>
-          <span class="navbar-toggler-icon"></span>
+        <button className="navbar-toggler" type="button" onClick={this.onToggle}>
+          <span className="navbar-toggler-icon"></span>
         </button>
 
         <Navbar.Collapse className="justify-content-end">
@@ -28,7 +35,7 @@ class DashboardNavbar extends Component {
               <Link to="/dashboard/home" className="dropdown-item">Profile</Link>
               <Link to="/dashboard/home" className="dropdown-item">Settings</Link>
             </NavDropdown>
-            <Link to="/" className="nav-link">Sign out</Link>
+            <Nav.Link onClick={this.onSignOut}>Sign out</Nav.Link>
           </Nav>
         </Navbar.Collapse>
 

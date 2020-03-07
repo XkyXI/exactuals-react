@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { NavLink, Link } from "react-router-dom";
-import { ListGroup, Button, Collapse } from "react-bootstrap";
+import { ListGroup, Collapse } from "react-bootstrap";
 
 class SidebarContent extends Component {
   constructor(props) {

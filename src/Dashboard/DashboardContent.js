@@ -1,21 +1,40 @@
-import React, { Component } from 'react';
+import React from 'react';
+import { Badge, Table } from 'react-bootstrap';
 
-class MainContent extends Component {
-  render() {
-    return (
-      <div className="dashboard">
-        {/* TODO: replace content with acutal content */}
-        <h5>Dashboard</h5>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-          Cras posuere sagittis dui. Proin in tortor et ligula commodo 
-          faucibus et sed arcu. In hendrerit ante eu lorem tristique eleifend. 
-          Aenean viverra quam sed nisi egestas, vel blandit diam faucibus. 
-          Sed lectus eros, elementum eget magna non, finibus ullamcorper elit. 
-          Quisque at venenatis magna. Proin vel tortor velit. Mauris sed pharetra enim, 
-          mollis maximus ante.</p>
-      </div>
-    );  
-  }
+const STATUS_BADGE = {
+  "Processing": "primary",
+  "Ready": "info",
+  "Delivered": "success",
+  "Cancelled": "warning"
+};
+
+export default function MainContent(props) {
+  return (
+    <div className="dashboard">
+      <h5>Recent Transactions</h5>
+      <Table responsive striped bordered hover>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Transaction ID</th>
+            <th>Disbursement</th>
+            <th>Amount</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+        { props.transactions &&
+          props.transactions.map((trans) => 
+          <tr key={trans.id}>
+            <td>{new Date(trans.date).toISOString().substring(0, 10)}</td> { /* TODO: moment.js */}
+            <td>{trans.transaction_id}</td>
+            <td>{trans.disbursement}</td>
+            <td>${trans.amount}</td>
+            <td><Badge variant={STATUS_BADGE[trans.status]}>{trans.status}</Badge></td>
+          </tr>)
+        }
+        </tbody>
+      </Table>
+    </div>
+  );
 }
-
-export default MainContent;
