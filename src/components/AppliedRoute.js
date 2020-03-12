@@ -1,7 +1,7 @@
 import React from "react";
 import { Route } from "react-router-dom";
 
-export default function App({ component: Component, appProps, ...rest }) {
+export default function AppliedRoute({ component: Component, appProps, ...rest }) {
   return (
     <Route 
       {...rest} 

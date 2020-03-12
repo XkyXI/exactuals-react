@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 
-class InviteContent extends Component {
+export default class PayeeInvite extends Component {
   render() {
     return (
       <div className="dashboard">
         {/* TODO: replace content with acutal content */}
-        <h5>Invite</h5>
+        <h5>Invite Payee</h5>
         <p>Nam dolor urna, aliquam ut dui vel, scelerisque consequat magna. 
           Etiam sed lacus vel ex accumsan sagittis quis et nisi. Cras at felis 
           vitae purus maximus semper. Curabitur mollis porttitor sapien, et 
@@ -22,5 +22,3 @@ class InviteContent extends Component {
     );  
   }
 }
-
-export default InviteContent;

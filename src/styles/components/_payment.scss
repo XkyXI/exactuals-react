@@ -1,0 +1,7 @@
+#send-payment-form {
+  .form-control {
+    @media(min-width: $tablet-width) {
+      max-width: 500px;
+    }
+  }
+}

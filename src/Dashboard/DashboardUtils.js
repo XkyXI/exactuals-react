@@ -15,3 +15,19 @@ export function dateDiff(a, b) {
 
   return Math.floor((utc2 - utc1) / _MS_PER_DAY);
 }
+
+export function hash (algo, str) {
+  return crypto.subtle.digest(algo, new TextEncoder().encode(str));
+}
+
+export function hex (buff) {
+  return [].map.call(new Uint8Array(buff), b => ('00' + b.toString(16)).slice(-2)).join('');
+}
+
+export function generateId(length) {
+  let letters = "0123456789abcdef";
+  let id = ""; 
+  for (let i = 0; i < length; i++) 
+    id += letters[(Math.floor(Math.random() * 16))]; 
+  return id;
+}

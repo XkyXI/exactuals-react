@@ -6,8 +6,13 @@ import AppliedRoute from "./components/AppliedRoute"
 import DBSidebar from "./Dashboard/SidebarContent";
 import DBNavbar from "./Dashboard/DashboardNavbar";
 import DBContent from "./Dashboard/DashboardContent";
-import InviteContent from "./Dashboard/InviteContent";
-import SendContent from "./Dashboard/SendContent";
+
+import PayeeAddContent from "./Dashboard/PayeeAddContent";
+import PayeeInviteContent from "./Dashboard/PayeeInviteContent";
+import PayeeManageContent from "./Dashboard/PayeeManageContent";
+
+import PaymentSendContent from "./Dashboard/PaymentSendContent";
+import PaymentManageContent from "./Dashboard/PaymentManageContent";
 
 import { fetchTransaction } from "./Dashboard/DashboardUtils"
 
@@ -17,6 +22,7 @@ const mql = window.matchMedia(`(min-width: 768px)`);
 // url paths
 const sidebarPaths = {
   home: "/dashboard/home",
+  payee_add: "/dashboard/payee/add",
   payee_invite: "/dashboard/payee/invite",
   payee_manage: "/dashboard/payee/manage",
   payment_send: "/dashboard/payment/send",
@@ -36,16 +42,17 @@ class Dashboard extends React.Component {
 
     this.mediaQueryChanged = this.mediaQueryChanged.bind(this);
     this.onSetSidebarOpen = this.onSetSidebarOpen.bind(this);
+    this.reloadTransactions = this.reloadTransactions.bind(this);
   }
 
-  // called when the component is loaded 
+  // called when the component is loaded
   componentDidMount() {
     mql.addListener(this.mediaQueryChanged);
-    this.onLoad();
+    this.loadTransactions();
   }
 
-  async onLoad() {
-    // if (!this.props.appProps.isAuthenticated) {
+  async loadTransactions() {
+    // if (!this.props.isAuthenticated) {
     //   return;
     // }
     const trans = await fetchTransaction(TRANSACTION_API);
@@ -55,6 +62,10 @@ class Dashboard extends React.Component {
   // called when the component is removed
   componentWillUnmount() {
     mql.removeListener(this.mediaQueryChanged);
+  }
+
+  reloadTransactions() {
+    this.loadTransactions();
   }
 
   onSetSidebarOpen(open) {
@@ -69,7 +80,7 @@ class Dashboard extends React.Component {
   render() {
     return (
       <Sidebar
-        sidebar={<DBSidebar paths={sidebarPaths} />} 
+        sidebar={<DBSidebar paths={sidebarPaths} type={this.props.username} />}
         open={this.state.sidebarOpen}
         docked={this.state.sidebarDocked}
         onSetOpen={this.onSetSidebarOpen}
@@ -79,17 +90,18 @@ class Dashboard extends React.Component {
         sidebarId="db-sidebar"
         contentClassName={this.state.sidebarDocked ? "sidebar-docked" : "sidebar-collapsed"}
       >
-        <DBNavbar name={this.props.appProps.username} openSidebar={this.onSetSidebarOpen} {...this.props} />
+        <DBNavbar name={this.props.username} openSidebar={this.onSetSidebarOpen} {...this.props} />
 
         {/* Base on different path, router-dom will render different component */}
         <Switch>  { /* TODO: Look up difference between switch and no switch */ }
           <AppliedRoute path={sidebarPaths.home} exact component={DBContent} appProps={this.state} />
 
-          <Route path={sidebarPaths.payee_invite} exact component={InviteContent} />
-          <Route path={sidebarPaths.payee_manage} exact component={SendContent} />
+          <Route path={sidebarPaths.payee_add} exact component={PayeeAddContent} />
+          <Route path={sidebarPaths.payee_invite} exact component={PayeeInviteContent} />
+          <Route path={sidebarPaths.payee_manage} exact component={PayeeManageContent} />
 
-          <Route path={sidebarPaths.payment_send} exact component={InviteContent} />
-          <Route path={sidebarPaths.payment_manage} exact component={SendContent} />
+          <AppliedRoute path={sidebarPaths.payment_send} exact component={PaymentSendContent} appProps={{reloadTransactions: this.reloadTransactions}} />
+          <AppliedRoute path={sidebarPaths.payment_manage} exact component={PaymentManageContent} appProps={this.state} />
         </Switch>
         {/* TODO: consider using map */}
       </Sidebar>

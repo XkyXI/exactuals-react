@@ -20,21 +20,21 @@ class Login extends Component {
 
   signin(username, password) {
     // TODO: validate username and password by making a request
-    // TODO: give feedback of loading status
     // TODO: provide more useful error messages
     // TODO: persistent login on refresh
 
     this.setState({ isLoading: true });
+
     fetch(USER_API + username)
     .then(response => {
       if (response.ok) return response.json();
       else this.setState({ displayError: true });
     })
     .then(data => { 
-      if (data.first_name) {
+      if (data.first_name) { // TODO: fix on username not found
         this.setState({ isLoading: false });
-        this.props.appProps.setAuthenticated(true);
-        this.props.appProps.setUsername(data.first_name);
+        this.props.setAuthenticated(true);
+        this.props.setUsername(data.first_name);
         this.props.history.push("/dashboard/home");
       }
     })
@@ -71,7 +71,7 @@ class Login extends Component {
 
         {/* Displays an error message when username/password validation failed */}
         { displayError && 
-         <Alert variant="danger"> {errorMessage} </Alert> }
+         <Alert variant="danger">Something went wrong <br/>{errorMessage}</Alert> }
 
         { /* Sign in form */ }
         <Form id="login-form" onSubmit={this.handleSubmit}>

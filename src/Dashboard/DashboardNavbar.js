@@ -17,7 +17,7 @@ class DashboardNavbar extends Component {
 
   onSignOut(e) {
     e.preventDefault();
-    this.props.appProps.setAuthenticated(false);
+    this.props.setAuthenticated(false);
     this.props.history.push("/");
   }
 

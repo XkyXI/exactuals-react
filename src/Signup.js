@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Form, Button, Col, Alert } from 'react-bootstrap';
+import { Form, Col, Alert } from 'react-bootstrap';
 
 import LoadingButton from './components/LoadingButton';
 
