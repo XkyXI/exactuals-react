@@ -15,7 +15,7 @@ export default class PaymentSend extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  handleSubmit(e) {    
+  handleSubmit(e) {
     e.preventDefault();
 
     this.setState({ isLoading: true });
@@ -25,7 +25,7 @@ export default class PaymentSend extends Component {
     let method = e.target.method.value;
     let message = e.target.message.value;
     let date = new Date().toISOString();
-    let ppid = "payor_payee";
+    let ppid = "ppid2"; // TODO: get ppid
     let transType = "Individual";
     let timezone = new Date().toTimeString().split(" ")[1];
     let status = "New";
@@ -76,7 +76,7 @@ export default class PaymentSend extends Component {
             <Form.Group as={Row} controlId="formAmount">
               <Form.Label column sm={2}>Amount</Form.Label>
               <Col sm={10}>
-                <Form.Control required type="number" pattern="^\d*(\.\d{0,2})?$" placeholder="$0.00" name="amount" min="0" step="0.01"/>
+                <Form.Control required type="number" pattern="^\d*(\.\d{0,2})?$" placeholder="$0.00" name="amount" min="0" step="0.01" />
               </Col>
             </Form.Group>
 
@@ -85,14 +85,16 @@ export default class PaymentSend extends Component {
               <Col sm={10}>
                 <Form.Control as="select" name="method">
                   <option>ACH</option>
+                  <option>IAT</option>
+                  <option>Wire</option>
                 </Form.Control>
               </Col>
             </Form.Group>
 
             <Form.Group as={Row} controlId="formMessage">
-              <Form.Label column sm={2}>Message (optional)</Form.Label>
+              <Form.Label column sm={2}>Memo (optional)</Form.Label>
               <Col sm={10}>
-                <Form.Control as="textarea" rows="3" placeholder="message" name="message" />
+                <Form.Control as="textarea" rows="3" placeholder="memo" name="message" />
               </Col>
             </Form.Group>
 
@@ -104,6 +106,6 @@ export default class PaymentSend extends Component {
           </Form>
         </div>
       </div>
-    );  
+    );
   }
 }

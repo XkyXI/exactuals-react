@@ -30,17 +30,19 @@ class Login extends Component {
       if (response.ok) return response.json();
       else this.setState({ displayError: true });
     })
-    .then(data => { 
-      if (data.first_name) { // TODO: fix on username not found
+    .then(data => {
+      if (data.password === password) { // TODO: fix on username not found
         this.setState({ isLoading: false });
         this.props.setAuthenticated(true);
-        this.props.setUsername(data.first_name);
+        this.props.setUserInfo(data);
         this.props.history.push("/dashboard/home");
+      } else {
+        this.setState({ displayError: true, isLoading: false, errorMessage: "Incorrect login combination" });
       }
     })
     .catch(err => { 
       console.log("error: " + err);
-      this.setState({ displayError: true, isLoading: false, errorMessage: String(err) });
+      this.setState({ displayError: true, isLoading: false, errorMessage: "User info not found" });
     });
   }
 

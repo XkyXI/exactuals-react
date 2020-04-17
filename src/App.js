@@ -3,11 +3,11 @@ import Routes from "./Routes";
 
 export default function App() {
   const [ isAuthenticated, setAuthenticated ] = useState(false);
-  const [ username, setUsername ] = useState("");
+  const [ userInfo, setUserInfo ] = useState({});
 
   return (
     <div className="app container">
-      <Routes appProps={{ isAuthenticated, setAuthenticated, username, setUsername }}/>
+      <Routes appProps={{ isAuthenticated, setAuthenticated, userInfo, setUserInfo }}/>
     </div>
   );
 }

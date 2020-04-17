@@ -14,7 +14,9 @@ import PayeeManageContent from "./Dashboard/PayeeManageContent";
 import PaymentSendContent from "./Dashboard/PaymentSendContent";
 import PaymentManageContent from "./Dashboard/PaymentManageContent";
 
-import { fetchTransaction } from "./Dashboard/DashboardUtils"
+import Preference from "./Dashboard/Preference";
+
+import { fetchAllTransactions, fetchUserTransactions } from "./Dashboard/TransactionUtils"
 
 // min-width: the window width is greater than X px
 const mql = window.matchMedia(`(min-width: 768px)`);
@@ -27,9 +29,9 @@ const sidebarPaths = {
   payee_manage: "/dashboard/payee/manage",
   payment_send: "/dashboard/payment/send",
   payment_manage: "/dashboard/payment/manage",
+  preference: "/dashboard/preference"
 }
 
-const TRANSACTION_API = "http://localhost:8000/transaction/"
 
 class Dashboard extends React.Component {
   constructor(props) {
@@ -48,6 +50,7 @@ class Dashboard extends React.Component {
   // called when the component is loaded
   componentDidMount() {
     mql.addListener(this.mediaQueryChanged);
+    // let intervalID = setInterval(this.reloadTransactions, 5000);
     this.loadTransactions();
   }
 
@@ -55,7 +58,7 @@ class Dashboard extends React.Component {
     // if (!this.props.isAuthenticated) {
     //   return;
     // }
-    const trans = await fetchTransaction(TRANSACTION_API);
+    const trans = await fetchUserTransactions(this.props.userInfo.uid, this.props.userInfo.user_type);
     this.setState({ transactions: trans });
   }
 
@@ -80,7 +83,7 @@ class Dashboard extends React.Component {
   render() {
     return (
       <Sidebar
-        sidebar={<DBSidebar paths={sidebarPaths} type={this.props.username} />}
+        sidebar={<DBSidebar paths={sidebarPaths} usertype={this.props.userInfo.user_type} />}
         open={this.state.sidebarOpen}
         docked={this.state.sidebarDocked}
         onSetOpen={this.onSetSidebarOpen}
@@ -90,7 +93,7 @@ class Dashboard extends React.Component {
         sidebarId="db-sidebar"
         contentClassName={this.state.sidebarDocked ? "sidebar-docked" : "sidebar-collapsed"}
       >
-        <DBNavbar name={this.props.username} openSidebar={this.onSetSidebarOpen} {...this.props} />
+        <DBNavbar name={this.props.userInfo.first_name} openSidebar={this.onSetSidebarOpen} {...this.props} />
 
         {/* Base on different path, router-dom will render different component */}
         <Switch>  { /* TODO: Look up difference between switch and no switch */ }
@@ -102,6 +105,8 @@ class Dashboard extends React.Component {
 
           <AppliedRoute path={sidebarPaths.payment_send} exact component={PaymentSendContent} appProps={{reloadTransactions: this.reloadTransactions}} />
           <AppliedRoute path={sidebarPaths.payment_manage} exact component={PaymentManageContent} appProps={this.state} />
+
+          <Route path={sidebarPaths.preference} exact component={Preference} />
         </Switch>
         {/* TODO: consider using map */}
       </Sidebar>

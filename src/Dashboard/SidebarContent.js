@@ -32,7 +32,7 @@ export default class SidebarContent extends Component {
         <ListGroup variant="flush">
           <NavLink to={this.props.paths.home} className="list-group-item list-group-item-action">Home</NavLink>
 
-          { this.props.type.toLowerCase() === "payor" &&
+          { this.props.usertype === "PYR" &&
             <><Link to="#" className="list-group-item list-group-item-action"
               onClick={() => this.setState({ payee: !payee })}
               aria-controls="payee"
@@ -53,13 +53,15 @@ export default class SidebarContent extends Component {
           <Collapse in={this.state.payment}>
             <ListGroup id="payment" className="nest-list-group-parent">
 
-              { this.props.type.toLowerCase() === "payor" &&
+              { this.props.usertype === "PYR" &&
                 <NavLink to={this.props.paths.payment_send} className="list-group-item list-group-item-action">Send Payment</NavLink>
               }
 
               <NavLink to={this.props.paths.payment_manage} className="list-group-item list-group-item-action">Manage Payment</NavLink>
             </ListGroup>
           </Collapse>
+
+          <NavLink to={this.props.paths.preference} className="list-group-item list-group-item-action">Preference</NavLink>
 
         </ListGroup>
       </div>
@@ -68,5 +70,5 @@ export default class SidebarContent extends Component {
 }
 
 SidebarContent.propTypes = {
-  name: PropTypes.string
+  usertype: PropTypes.string
 };

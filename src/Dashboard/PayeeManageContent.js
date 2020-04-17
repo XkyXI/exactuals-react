@@ -1,21 +1,35 @@
 import React, { Component } from 'react';
+import { Table } from 'react-bootstrap';
 
 export default class PayeeManage extends Component {
   render() {
     return (
       <div className="dashboard">
-        {/* TODO: replace content with acutal content */}
         <h5>Manage Payee</h5>
-        <p>Nullam non odio enim. Aliquam pretium, lacus ac lobortis tempor,
-        quam massa semper ipsum, a fermentum leo diam vel lacus. Praesent
-        non justo volutpat, consectetur ante in, rutrum justo. Ut tincidunt
-        sed ipsum vel egestas. Pellentesque tempor erat dictum, aliquet
-        justo eu, pellentesque sem. Proin vitae dolor congue, consequat
-        tortor in, elementum ligula. Praesent non lectus a lectus tristique
-        tincidunt. Morbi felis justo, venenatis non eros sit amet, ultrices
-        tincidunt libero. Proin sit amet maximus metus, faucibus euismod quam.
-        Suspendisse eu accumsan orci, ut ullamcorper leo. Lorem ipsum dolor
-        sit amet, consectetur adipiscing elit.</p>
+        <Table responsive striped bordered hover>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Satisfaction</th>
+              <th>Last Transaction</th>
+              <th>Transactions</th>
+              <th>Date Joined</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>40bd00156</td>
+              <td>Bob</td>
+              <td>bob@test.com</td>
+              <td>Happy</td>
+              <td>$1532.51 ACH</td>
+              <td>12 times</td>
+              <td>04/01/2020</td>
+            </tr>
+          </tbody>
+        </Table>
       </div>
     );  
   }

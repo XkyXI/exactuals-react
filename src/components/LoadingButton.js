@@ -3,7 +3,7 @@ import { Button, Spinner } from 'react-bootstrap';
 
 export default function LoadingButton({isLoading, className, ...props}) {
   return (
-    <Button className={className} {...props}>
+    <Button className={className} {...props} disabled={isLoading}>
 
     { !isLoading ? props.children :
       <Spinner
