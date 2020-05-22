@@ -16,7 +16,7 @@ import PaymentManageContent from "./Dashboard/PaymentManageContent";
 
 import Preference from "./Dashboard/Preference";
 
-import { fetchAllTransactions, fetchUserTransactions } from "./Dashboard/TransactionUtils"
+import { fetchUserTransactions, fetchPPInfo, fetchUserInfo } from "./Dashboard/TransactionUtils"
 
 // min-width: the window width is greater than X px
 const mql = window.matchMedia(`(min-width: 768px)`);
@@ -39,7 +39,8 @@ class Dashboard extends React.Component {
     this.state = {
       sidebarDocked: mql.matches,
       sidebarOpen: false,
-      transactions: null
+      transactions: null,
+      ppinfo: null
     };
 
     this.mediaQueryChanged = this.mediaQueryChanged.bind(this);
@@ -52,12 +53,20 @@ class Dashboard extends React.Component {
     mql.addListener(this.mediaQueryChanged);
     // let intervalID = setInterval(this.reloadTransactions, 5000);
     this.loadTransactions();
+    this.loadPPInfo();
+  }
+
+  async loadPPInfo() {
+    const ppif = await fetchPPInfo(this.props.userInfo.uid, this.props.userInfo.user_type);
+    const result = await fetchUserInfo(ppif);
+    console.log(result);
+    this.setState({ ppinfo: result });
   }
 
   async loadTransactions() {
-    // if (!this.props.isAuthenticated) {
-    //   return;
-    // }
+    if (!this.props.isAuthenticated) {
+      return;
+    }
     const trans = await fetchUserTransactions(this.props.userInfo.uid, this.props.userInfo.user_type);
     this.setState({ transactions: trans });
   }
@@ -100,10 +109,10 @@ class Dashboard extends React.Component {
           <AppliedRoute path={sidebarPaths.home} exact component={DBContent} appProps={this.state} />
 
           <Route path={sidebarPaths.payee_add} exact component={PayeeAddContent} />
-          <Route path={sidebarPaths.payee_invite} exact component={PayeeInviteContent} />
-          <Route path={sidebarPaths.payee_manage} exact component={PayeeManageContent} />
+          {/* <Route path={sidebarPaths.payee_invite} exact component={PayeeInviteContent} /> */}
+          <AppliedRoute path={sidebarPaths.payee_manage} exact component={PayeeManageContent} appProps={this.state} />
 
-          <AppliedRoute path={sidebarPaths.payment_send} exact component={PaymentSendContent} appProps={{reloadTransactions: this.reloadTransactions}} />
+          <AppliedRoute path={sidebarPaths.payment_send} exact component={PaymentSendContent} appProps={this.state} />
           <AppliedRoute path={sidebarPaths.payment_manage} exact component={PaymentManageContent} appProps={this.state} />
 
           <Route path={sidebarPaths.preference} exact component={Preference} />

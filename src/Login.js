@@ -31,7 +31,7 @@ class Login extends Component {
       else this.setState({ displayError: true });
     })
     .then(data => {
-      if (data.password === password) { // TODO: fix on username not found
+      if (data.password === password) {
         this.setState({ isLoading: false });
         this.props.setAuthenticated(true);
         this.props.setUserInfo(data);

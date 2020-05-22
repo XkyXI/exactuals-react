@@ -12,22 +12,24 @@ export default class PayeeManage extends Component {
               <th>ID</th>
               <th>Name</th>
               <th>Email</th>
-              <th>Satisfaction</th>
+              {/* <th>Satisfaction</th> */}
               <th>Last Transaction</th>
               <th>Transactions</th>
               <th>Date Joined</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>40bd00156</td>
-              <td>Bob</td>
-              <td>bob@test.com</td>
-              <td>Happy</td>
-              <td>$1532.51 ACH</td>
-              <td>12 times</td>
-              <td>04/01/2020</td>
-            </tr>
+          { this.props.ppinfo &&
+            this.props.ppinfo.map((ppinfo) => 
+            <tr key={ppinfo.ppid}>
+              <td>{ppinfo.payee_id}</td>
+              <td>{ppinfo.info.first_name}</td>
+              <td>{ppinfo.info.email}</td>
+              <td>{ppinfo.trans.length > 0 ? "$" + ppinfo.trans[0].amount : "None"}</td>
+              <td>{ppinfo.trans.length} times</td>
+              <td>{new Date(ppinfo.info.created_on).toISOString().substring(0, 10)}</td>
+            </tr>)
+          }
           </tbody>
         </Table>
       </div>

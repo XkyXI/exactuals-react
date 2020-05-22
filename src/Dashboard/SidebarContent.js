@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { NavLink, Link } from "react-router-dom";
 import { ListGroup, Collapse } from "react-bootstrap";
+import { isPayor } from "./TransactionUtils"
 
 export default class SidebarContent extends Component {
   constructor(props) {
@@ -14,7 +15,7 @@ export default class SidebarContent extends Component {
 
   render() {
     const { payee, payment } = this.state;
-
+    console.log(this.props.usertype);
     return (
       <div id="sidebar-wrapper">
 
@@ -32,7 +33,7 @@ export default class SidebarContent extends Component {
         <ListGroup variant="flush">
           <NavLink to={this.props.paths.home} className="list-group-item list-group-item-action">Home</NavLink>
 
-          { this.props.usertype === "PYR" &&
+          { isPayor(this.props.usertype) &&
             <><Link to="#" className="list-group-item list-group-item-action"
               onClick={() => this.setState({ payee: !payee })}
               aria-controls="payee"
@@ -40,7 +41,7 @@ export default class SidebarContent extends Component {
             <Collapse in={this.state.payee}>
               <ListGroup id="payee" className="nest-list-group-parent">
                 <NavLink to={this.props.paths.payee_add} className="list-group-item list-group-item-action">Add Payee</NavLink>
-                <NavLink to={this.props.paths.payee_invite} className="list-group-item list-group-item-action">Invite Payee</NavLink>
+                {/* <NavLink to={this.props.paths.payee_invite} className="list-group-item list-group-item-action">Invite Payee</NavLink> */}
                 <NavLink to={this.props.paths.payee_manage} className="list-group-item list-group-item-action">Manage Payee</NavLink>
               </ListGroup>
             </Collapse></>
@@ -53,7 +54,7 @@ export default class SidebarContent extends Component {
           <Collapse in={this.state.payment}>
             <ListGroup id="payment" className="nest-list-group-parent">
 
-              { this.props.usertype === "PYR" &&
+              { isPayor(this.props.usertype) &&
                 <NavLink to={this.props.paths.payment_send} className="list-group-item list-group-item-action">Send Payment</NavLink>
               }
 
@@ -61,7 +62,7 @@ export default class SidebarContent extends Component {
             </ListGroup>
           </Collapse>
 
-          <NavLink to={this.props.paths.preference} className="list-group-item list-group-item-action">Preference</NavLink>
+          {/* <NavLink to={this.props.paths.preference} className="list-group-item list-group-item-action">Preference</NavLink> */}
 
         </ListGroup>
       </div>

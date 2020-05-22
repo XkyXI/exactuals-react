@@ -1,7 +1,18 @@
-#send-payment-form {
-  .form-control {
-    @media(min-width: $tablet-width) {
-      max-width: 500px;
+.dashboard {
+  #send-payment-form {
+    .form-control {
+      @media(min-width: $tablet-width) {
+        max-width: 500px;
+      }
     }
+  }
+
+  #preference-label {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .step-btns {
+    margin-right: 0.5rem;
   }
 }
