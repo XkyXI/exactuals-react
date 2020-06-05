@@ -7,6 +7,8 @@ import PaymentSendForm from "./PaymentSendForm";
 import PaymentSendProcessor from "./PaymentSendProcessor";
 import PaymentSendConfirm from "./PaymentSendConfirm";
 
+import { process_payment } from "../Non-ML/non-ml"
+
 const TRANSACTION_API = "http://localhost:8000/transaction/"
 const PROCESSOR_API = "http://localhost:8000/user_data/"
 
@@ -16,6 +18,7 @@ export default class PaymentSend extends Component {
     super(props);
     this.state = {
       step: 1,
+      weight: 5,
 
       // step 1
       ppid: "",
@@ -32,40 +35,51 @@ export default class PaymentSend extends Component {
       ]
     };
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.processorScore = this.processorScore.bind(this);
+    this.changeProcessorScore = this.changeProcessorScore.bind(this);
   }
 
-  processorScore() {
-    const { ppid, amount, processors } = this.state;
-    const [ pp, payor_id, payee_id ] = ppid.split(",");
+  changeProcessorScore() {
+    const { weight, ppid, amount } = this.state;
+    if (ppid === "" || amount === "") return;
 
-    const country = 840;
-    const currency = 840; // for USD and USA
-    const cost = 10;
-    let formData = new FormData();
-    formData.append("amount", amount);
-    formData.append("original_currency", currency);
-    formData.append("target_currency", currency);
-    formData.append("transaction_cost", cost);
-    formData.append("payor_id", payor_id);
-    formData.append("payee_id", payee_id);
-    formData.append("payor_payee_id", pp);
-    formData.append("country", country);
-
+    const w = weight / 10;
+    const result = process_payment(840, parseFloat(amount), false, 1.0 - w, w);
     let updatedProcessors = [];
-    processors.forEach(proc => { 
-      formData.set("processor", proc.id);
-
-      let requestOptions = {
-        method: "POST", 
-        body: formData
-      };
-
-      fetch(PROCESSOR_API, requestOptions)
-        .then(response => response.json())
-        .then(result => { updatedProcessors.unshift({ id: proc.id, score: result.payee_satisfaction }); this.setState({ processors: updatedProcessors }); })
-        .catch(error => console.log('error', error));
+    result.sorted_keys.forEach(proc => {
+      updatedProcessors.unshift({ id: proc, score: result.processors[proc].final_score });
     });
+
+    this.setState({ processors: updatedProcessors });
+
+    // const [ pp, payor_id, payee_id ] = ppid.split(",");
+
+    // const country = 840;
+    // const currency = 840; // for USD and USA
+    // const cost = 10;
+    // let formData = new FormData();
+    // formData.append("amount", amount);
+    // formData.append("original_currency", currency);
+    // formData.append("target_currency", currency);
+    // formData.append("transaction_cost", cost);
+    // formData.append("payor_id", payor_id);
+    // formData.append("payee_id", payee_id);
+    // formData.append("payor_payee_id", pp);
+    // formData.append("country", country);
+
+    // let updatedProcessors = [];
+    // processors.forEach(proc => { 
+    //   formData.set("processor", proc.id);
+
+    //   let requestOptions = {
+    //     method: "POST", 
+    //     body: formData
+    //   };
+
+    //   fetch(PROCESSOR_API, requestOptions)
+    //     .then(response => response.json())
+    //     .then(result => { updatedProcessors.unshift({ id: proc.id, score: result.payee_satisfaction }); this.setState({ processors: updatedProcessors }); })
+    //     .catch(error => console.log('error', error));
+    // });
     
   }
 
@@ -120,12 +134,12 @@ export default class PaymentSend extends Component {
   };
 
   handleChange = input => evt => {
-    this.setState({ [input]: evt.target.value });
+    this.setState({ [input]: evt.target.value }, this.changeProcessorScore );
   };
 
   showStep = () => {
-    const { step, ppid, amount, method, memo, processor, processors } = this.state;
-    const values = { ppid, amount, method, memo, processor };
+    const { step, weight, ppid, amount, method, memo, processor, processors } = this.state;
+    const values = { ppid, amount, method, memo, processor, weight };
 
     switch (step) {
       case 1:
@@ -134,7 +148,6 @@ export default class PaymentSend extends Component {
             ppinfo={this.props.ppinfo}
             handleChange={this.handleChange}
             nextStep={this.nextStep}
-            processorScore={this.processorScore}
             values={values}
           />
         );
@@ -149,6 +162,7 @@ export default class PaymentSend extends Component {
             values={values}
           />
         );
+
       case 3:
         return (
           <PaymentSendConfirm
@@ -161,11 +175,11 @@ export default class PaymentSend extends Component {
   };
 
   render() {
-    const { step } = this.state;
+    const { step, weight } = this.state;
 
     return (
       <>
-        <Preference />
+        <Preference weight={weight} handleChange={this.handleChange} />
 
         <div className="dashboard">
           <h5>Send Payment | Step {step} of 3</h5>

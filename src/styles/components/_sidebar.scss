@@ -26,6 +26,9 @@
   }
 
   .nest-list-group-parent > .list-group-item {
-    padding-left: 1.75rem;
+    font-size: 14px;
+    svg {
+      margin-right: 5px;
+    }
   }
 }

@@ -1,13 +1,16 @@
 import React, { Component } from 'react';
-import { Form, Alert, Row, Col } from 'react-bootstrap';
+import { Form, Alert, Row, Col, Overlay, Tooltip } from 'react-bootstrap';
 import LoadingButton from '../components/LoadingButton';
-
+import MapChart from '../components/MapChart';
 
 export default class PaymentSendForm extends Component {
+  constructor(props) {
+    super(props);
+    this.ref = React.createRef();
+  }
 
   next = e => {
     e.preventDefault();
-    this.props.processorScore();
     this.props.nextStep();
   };
 
@@ -21,12 +24,22 @@ export default class PaymentSendForm extends Component {
           <Form.Group as={Row} controlId="formPayee">
             <Form.Label column sm={2}>Payee</Form.Label>
             <Col sm={10}>
-              <Form.Control as="select" name="payee" value={ppid} onChange={handleChange("ppid")}>
+              <Form.Control ref={this.ref} as="select" name="payee" value={ppid} onChange={handleChange("ppid")}>
                 <option value="" disabled style={{display: "none"}}>-- Select payee --</option>
-                { ppinfo.map((ppif) => 
-                  <option key={ppif.ppid} value={[ppif.ppid, ppif.payor_id, ppif.payee_id]}>{ppif.info.first_name}</option>
+                { ppinfo.map((ppif, i) => 
+                  <option key={ppif.ppid} value={[ppif.ppid, ppif.payee_id, ppif.payor_id, ppif.info.first_name+" "+ppif.info.last_name, i]}>{ppif.info.first_name + " " + ppif.info.last_name}</option>
                 ) }
               </Form.Control>
+              <Overlay target={this.ref.current} show={true} placement={"right"}>
+                <Tooltip id="payee-overlay">
+                  { this.ref.current && this.ref.current.value.split(",")[3] }
+                  <br/>
+                  { this.ref.current && "Bank: BOA, Location: USA"  }
+                  <br/>
+                  { this.ref.current && "Most recent transaction: $123.00 on 05/29/2020"  }
+                  <br/>
+                </Tooltip>
+              </Overlay>
             </Col>
           </Form.Group>
 

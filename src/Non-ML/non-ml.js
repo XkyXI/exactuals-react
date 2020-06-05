@@ -65,10 +65,10 @@ const elementToProcessor = (processor, country, pname) =>
 }
 
 // Do this onload 
-const init = () =>
+export const init = () =>
 {
     info = {};
-    var resp = getXML("./updated.xml");
+    var resp = getXML("/updated.xml");
     var countries = resp.documentElement.children;
     for (var i = 0; i < countries.length; ++i)
     {
@@ -94,10 +94,10 @@ const init = () =>
  * @returns {array} sorted_keys - an array of sorted processors.
  * @returns {Object} processors - use this dinctionary to get detailed information for each sorted keys above.
  */
-const process_payment = (country, amount, isFx, profit_weight, satisfactory_weight) =>
+export const process_payment = (country, amount, isFx, profit_weight, satisfactory_weight) =>
 {   
     var maxProfit = Number.NEGATIVE_INFINITY;
-    var maxSatis  = -Number.NEGATIVE_INFINITY;
+    var maxSatis  = Number.NEGATIVE_INFINITY;
     var processors = info[country];
 
     for(var p in processors)
@@ -128,6 +128,6 @@ const process_payment = (country, amount, isFx, profit_weight, satisfactory_weig
 }
 
 // for testing ----------------------------------------
-init()
-console.log(process_payment(410, 100, true, 0.5, 0.5));
+// init()
+// console.log(process_payment(410, 100, true, 0.5, 0.5));
 // for testing ----------------------------------------

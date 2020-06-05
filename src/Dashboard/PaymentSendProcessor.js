@@ -1,10 +1,14 @@
 import React, { Component } from 'react';
-import { Form, Alert, Row, Col } from 'react-bootstrap';
+import { Form, Alert, Row, Col, Table } from 'react-bootstrap';
 import LoadingButton from '../components/LoadingButton';
 
-const PROCESSOR = { 1: "A", 2: "B", 3: "C" };
-
 export default class PaymentSendProcessor extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      selected: 0
+    };
+  }
 
   next = e => {
     e.preventDefault();
@@ -16,28 +20,51 @@ export default class PaymentSendProcessor extends Component {
     this.props.prevStep();
   };
 
+  select = e => {
+    this.setState({ selected: e.currentTarget.getAttribute("value") });
+  };
+
   render() {
     const { values, handleChange, processors } = this.props;
-    const { processor } = values;
+    const { selected } = this.state;
+    console.log(selected);
 
     return (
       <div>
-        <Form id="send-payment-form">
+        <Form id="send-processor-form">
           <Form.Group as={Row} controlId="formProcessor">
-            <Form.Label column sm={2}>Processor</Form.Label>
             <Col sm={10}>
-              {/* <Form.Control as="select" name="processor" value={processor} onChange={handleChange("processor")}> */}
-              {
-                processors.map(proc => 
-                  <Form.Check key={proc.id} type="radio" label={`Processor ${PROCESSOR[proc.id]}, Score: ${proc.score}`} />
-                )
-              }
-              {/* </Form.Control> */}
+              <Table responsive bordered hover>
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>Processor ID</th>
+                    <th>Score</th>
+                  </tr>
+                </thead>
+                <tbody>
+                { processors && processors.map((proc, i) => 
+                  <tr key={proc.id} value={i}>
+                    <td value={i} onClick={this.select}>
+                      <Form.Check
+                        type="radio"
+                        name="processor-radio"
+                        value={i}
+                        checked={selected == i}
+                        onChange={e => this.setState({ selected: e.target.value })}
+                      />
+                    </td>
+                    <td value={i} onClick={this.select}>{proc.id}</td>
+                    <td value={i} onClick={this.select}>{proc.score}</td>
+                  </tr>)
+                }
+                </tbody>
+              </Table>
             </Col>
           </Form.Group>
 
           <Form.Group as={Row}>
-            <Col sm={{ span: 10, offset: 2 }}>
+            <Col sm={10}>
               <LoadingButton className="step-btns" isLoading={false} onClick={this.prev} variant="secondary">Prev</LoadingButton>
               <LoadingButton className="step-btns" isLoading={false} onClick={this.next}>Next</LoadingButton>
             </Col>

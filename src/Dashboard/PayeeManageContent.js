@@ -23,7 +23,7 @@ export default class PayeeManage extends Component {
             this.props.ppinfo.map((ppinfo) => 
             <tr key={ppinfo.ppid}>
               <td>{ppinfo.payee_id}</td>
-              <td>{ppinfo.info.first_name}</td>
+              <td>{ppinfo.info.first_name + " " + ppinfo.info.last_name}</td>
               <td>{ppinfo.info.email}</td>
               <td>{ppinfo.trans.length > 0 ? "$" + ppinfo.trans[0].amount : "None"}</td>
               <td>{ppinfo.trans.length} times</td>

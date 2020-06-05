@@ -4,6 +4,9 @@ import { NavLink, Link } from "react-router-dom";
 import { ListGroup, Collapse } from "react-bootstrap";
 import { isPayor } from "./TransactionUtils"
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faPlus, faUsers, faMap, faMoneyBill, faList, faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons'
+
 export default class SidebarContent extends Component {
   constructor(props) {
     super(props);
@@ -15,7 +18,7 @@ export default class SidebarContent extends Component {
 
   render() {
     const { payee, payment } = this.state;
-    console.log(this.props.usertype);
+
     return (
       <div id="sidebar-wrapper">
 
@@ -37,12 +40,21 @@ export default class SidebarContent extends Component {
             <><Link to="#" className="list-group-item list-group-item-action"
               onClick={() => this.setState({ payee: !payee })}
               aria-controls="payee"
-              aria-expanded={payee}>Payee</Link>
+              aria-expanded={payee}>Payee <FontAwesomeIcon icon={payee ? faChevronUp : faChevronDown} /> </Link>
             <Collapse in={this.state.payee}>
               <ListGroup id="payee" className="nest-list-group-parent">
-                <NavLink to={this.props.paths.payee_add} className="list-group-item list-group-item-action">Add Payee</NavLink>
-                {/* <NavLink to={this.props.paths.payee_invite} className="list-group-item list-group-item-action">Invite Payee</NavLink> */}
-                <NavLink to={this.props.paths.payee_manage} className="list-group-item list-group-item-action">Manage Payee</NavLink>
+                <NavLink to={this.props.paths.payee_add} className="list-group-item list-group-item-action">
+                  <FontAwesomeIcon icon={faPlus} />
+                  Add Payee
+                </NavLink>
+                <NavLink to={this.props.paths.payee_manage} className="list-group-item list-group-item-action">
+                  <FontAwesomeIcon icon={faUsers} />
+                  Manage Payee
+                </NavLink>
+                <NavLink to={this.props.paths.payee_invite} className="list-group-item list-group-item-action">
+                  <FontAwesomeIcon icon={faMap} />
+                  View Payee
+                </NavLink>
               </ListGroup>
             </Collapse></>
           }
@@ -50,15 +62,21 @@ export default class SidebarContent extends Component {
           <Link to="#" className="list-group-item list-group-item-action"
             onClick={() => this.setState({ payment: !payment })}
             aria-controls="payment"
-            aria-expanded={payment}>Payment</Link>
+            aria-expanded={payment}>Payment <FontAwesomeIcon icon={payment ? faChevronUp : faChevronDown} /> </Link>
           <Collapse in={this.state.payment}>
             <ListGroup id="payment" className="nest-list-group-parent">
 
               { isPayor(this.props.usertype) &&
-                <NavLink to={this.props.paths.payment_send} className="list-group-item list-group-item-action">Send Payment</NavLink>
+                <NavLink to={this.props.paths.payment_send} className="list-group-item list-group-item-action">
+                  <FontAwesomeIcon icon={faMoneyBill} />
+                  Send Payment
+                </NavLink>
               }
 
-              <NavLink to={this.props.paths.payment_manage} className="list-group-item list-group-item-action">Manage Payment</NavLink>
+              <NavLink to={this.props.paths.payment_manage} className="list-group-item list-group-item-action">
+                <FontAwesomeIcon icon={faList} />
+                Manage Payment
+              </NavLink>
             </ListGroup>
           </Collapse>
 

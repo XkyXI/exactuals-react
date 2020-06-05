@@ -26,7 +26,6 @@ export function isPayee(uType) {
 }
 
 export async function fetchUserTransactions(uid, uType="") {
-  console.log(`${uid}, ${uType}`);
   if (isPayor(uType))
     return await fetchData(TRANSACTION_API + uid + PAYOR_API);
   else if (isPayee(uType))
@@ -47,7 +46,6 @@ export async function fetchPPInfo(uid, uType) {
 export async function fetchUserInfo(ppinfo) {
   return Promise.resolve(ppinfo).then(async function(pps) {
     for (let pp of pps) {
-      console.log(pps);
       pp.info = await fetchData(USER_API + pp.payee_id);
       pp.trans = await fetchUserTransactions(pp.ppid);
     }

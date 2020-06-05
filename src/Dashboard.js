@@ -17,6 +17,8 @@ import PaymentManageContent from "./Dashboard/PaymentManageContent";
 import Preference from "./Dashboard/Preference";
 
 import { fetchUserTransactions, fetchPPInfo, fetchUserInfo } from "./Dashboard/TransactionUtils"
+import { init } from "./Non-ML/non-ml"
+
 
 // min-width: the window width is greater than X px
 const mql = window.matchMedia(`(min-width: 768px)`);
@@ -54,12 +56,12 @@ class Dashboard extends React.Component {
     // let intervalID = setInterval(this.reloadTransactions, 5000);
     this.loadTransactions();
     this.loadPPInfo();
+    init();
   }
 
   async loadPPInfo() {
     const ppif = await fetchPPInfo(this.props.userInfo.uid, this.props.userInfo.user_type);
     const result = await fetchUserInfo(ppif);
-    console.log(result);
     this.setState({ ppinfo: result });
   }
 
@@ -109,7 +111,7 @@ class Dashboard extends React.Component {
           <AppliedRoute path={sidebarPaths.home} exact component={DBContent} appProps={this.state} />
 
           <Route path={sidebarPaths.payee_add} exact component={PayeeAddContent} />
-          {/* <Route path={sidebarPaths.payee_invite} exact component={PayeeInviteContent} /> */}
+          <Route path={sidebarPaths.payee_invite} exact component={PayeeInviteContent} />
           <AppliedRoute path={sidebarPaths.payee_manage} exact component={PayeeManageContent} appProps={this.state} />
 
           <AppliedRoute path={sidebarPaths.payment_send} exact component={PaymentSendContent} appProps={this.state} />
