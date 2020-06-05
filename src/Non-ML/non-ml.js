@@ -98,6 +98,7 @@ export const process_payment = (country, amount, isFx, profit_weight, satisfacto
 {   
     var maxProfit = Number.NEGATIVE_INFINITY;
     var maxSatis  = Number.NEGATIVE_INFINITY;
+    var minProfitScore = Number.POSITIVE_INFINITY;
     var processors = info[country];
 
     for(var p in processors)
@@ -110,7 +111,18 @@ export const process_payment = (country, amount, isFx, profit_weight, satisfacto
     {
         var p_score = processors[p].profit / maxProfit;
         processors[p].profit_score = maxProfit < 0 ? -p_score : p_score;
+        minProfitScore = Math.min(processors[p].profit_score, minProfitScore)
         processors[p].satisfactory_score = processors[p].average_rating / maxSatis;
+    }
+
+    
+    var rand = Math.random();
+    for(var p in processors)
+    {
+        if(minProfitScore < 0)
+        {
+            processors[p].profit_score += -minProfitScore + rand;
+        }
         processors[p].calc_finalscore(profit_weight, satisfactory_weight);
     }
 
