@@ -6,7 +6,7 @@ export default function MainContent(props) {
     <div className="dashboard">
       <h5>Recent Transactions</h5>
       { props.transactions &&
-        <TransactionTable transactions={props.transactions.slice(0, 5)} />
+        <TransactionTable transactions={props.transactions.slice(0, 5)} ppinfo={props.ppinfo} />
       }
     </div>
   );

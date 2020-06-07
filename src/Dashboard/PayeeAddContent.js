@@ -3,20 +3,34 @@ import { Form } from 'react-bootstrap';
 import LoadingButton from '../components/LoadingButton';
 
 export default class PayeeAdd extends Component {
-  state = {
-    isLoading: false,
-    items: [],
-    value: "",
-    error: null
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      isLoading: false,
+      items: [],
+      value: "",
+      error: null
+    };  
+  }
 
   handleSubmit = evt => {
     evt.preventDefault();
+    const { items } = this.state;
+
+    if (items.length == 0) return;
+
     this.setState({ isLoading: true });
-    setTimeout(function() { // Start the timer
-      this.setState({ isLoading: false }) // After 1 second
-    }.bind(this), 1000);
-    this.setState({ items: [], value: "", error: null });
+
+    let mailto_result = 
+        "mailto:" + 
+        items.join(";") + 
+        `?subject=Invitation from ${this.props.first_name} to Exactuals` + 
+        "&body=You are invited to Exactuals Payment Processing Portal, please use this email to sign up at the following link %0D%0A" + 
+        `http://localhost:3000/signup`;
+
+
+    this.setState({ isLoading: false, items: [], value: "", error: null });
+    window.location = mailto_result;
   };
 
   handleKeyDown = evt => {

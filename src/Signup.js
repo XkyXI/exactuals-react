@@ -49,7 +49,7 @@ class Login extends Component {
     payeeFormData.append("uid", uid);
 
     await this.postUser(userFormData);
-    if (userType === "PYR")
+    if (userType === "Payor")
       await this.postPayor(payorFormData);
     else 
       await this.postPayee(payeeFormData);
@@ -123,8 +123,8 @@ class Login extends Component {
             </Form.Row>
             <Form.Control required type="password" placeholder="Password" name="password" />
             <Form.Group>
-              <Form.Check type="radio" label="Payor" value="PYR" name="usertype" id="payorRadio" defaultChecked />
-              <Form.Check type="radio" label="Payee" value="PYE" name="usertype" id="payeeRadio" />
+              <Form.Check type="radio" label="Payor" value="Payor" name="usertype" id="payorRadio" defaultChecked />
+              <Form.Check type="radio" label="Payee" value="Payee" name="usertype" id="payeeRadio" />
             </Form.Group>
 
           </Form.Group>

@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { generateId } from "./DashboardUtils";
-import { Button, Spinner } from 'react-bootstrap';
 
 import Preference from "./Preference";
 import PaymentSendForm from "./PaymentSendForm";
@@ -8,6 +7,7 @@ import PaymentSendProcessor from "./PaymentSendProcessor";
 import PaymentSendConfirm from "./PaymentSendConfirm";
 
 import { process_payment } from "../Non-ML/non-ml"
+import { Alert } from 'react-bootstrap';
 
 const TRANSACTION_API = "http://localhost:8000/transaction/"
 const PROCESSOR_API = "http://localhost:8000/user_data/"
@@ -27,12 +27,14 @@ export default class PaymentSend extends Component {
       memo: "",
 
       // step 2
-      processor: 1,
+      processor: 0,
       processors: [ 
-        { id: 1, score: 0 },
-        { id: 2, score: 0 },
-        { id: 3, score: 0 }
-      ]
+        { id: "A", score: 0 },
+        { id: "B", score: 0 },
+        { id: "C", score: 0 }
+      ],
+
+      status: NaN
     };
     this.handleSubmit = this.handleSubmit.bind(this);
     this.changeProcessorScore = this.changeProcessorScore.bind(this);
@@ -43,7 +45,7 @@ export default class PaymentSend extends Component {
     if (ppid === "" || amount === "") return;
 
     const w = weight / 10;
-    const result = process_payment(840, parseFloat(amount), false, 1.0 - w, w);
+    const result = process_payment(840, parseFloat(amount), ppid === "0", 1.0 - w, w);
     let updatedProcessors = [];
     result.sorted_keys.forEach(proc => {
       updatedProcessors.unshift({ id: proc, score: result.processors[proc].final_score });
@@ -103,7 +105,7 @@ export default class PaymentSend extends Component {
     formdata.append("timezone", timezone);
     formdata.append("status", status);
     formdata.append("status_date", date);
-    formdata.append("ppid", ppid.split(",")[0]);
+    formdata.append("ppid", this.props.ppinfo[parseInt(ppid)].ppid);
 
     let requestOptions = {
       method: 'POST',
@@ -111,12 +113,11 @@ export default class PaymentSend extends Component {
     };
 
     fetch(TRANSACTION_API, requestOptions)
-      .then(response => response.text())
-      .then(result => console.log(result))
+      .then(response => { this.setState({ status: response.status }); return response.text(); })
+      .then(result => { console.log(result); })
       .catch(error => console.log('error', error));
 
     this.setState({ isLoading: false });
-    this.props.history.push("/dashboard/payment/manage");
   }
 
   nextStep = () => {
@@ -137,9 +138,16 @@ export default class PaymentSend extends Component {
     this.setState({ [input]: evt.target.value }, this.changeProcessorScore );
   };
 
+  changeProcessor = value => {
+    this.setState({ processor: value});
+  };
+
   showStep = () => {
-    const { step, weight, ppid, amount, method, memo, processor, processors } = this.state;
-    const values = { ppid, amount, method, memo, processor, weight };
+    const { step, weight, ppid, amount, method, memo, processor, processors, status } = this.state;
+    let name = "";
+    if (ppid)
+      name = this.props.ppinfo[parseInt(ppid)].info.first_name + " " + this.props.ppinfo[parseInt(ppid)].info.last_name;
+    const values = { name, ppid, amount, method, memo, processor, processors, weight };
 
     switch (step) {
       case 1:
@@ -159,6 +167,7 @@ export default class PaymentSend extends Component {
             nextStep={this.nextStep}
             prevStep={this.prevStep}
             processors={processors}
+            changeProcessor={this.changeProcessor}
             values={values}
           />
         );
@@ -169,6 +178,8 @@ export default class PaymentSend extends Component {
             submit={this.handleSubmit}
             prevStep={this.prevStep}
             values={values}
+            status={status}
+            history={this.props.history}
           />
         );
     }

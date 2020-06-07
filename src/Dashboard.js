@@ -53,7 +53,7 @@ class Dashboard extends React.Component {
   // called when the component is loaded
   componentDidMount() {
     mql.addListener(this.mediaQueryChanged);
-    // let intervalID = setInterval(this.reloadTransactions, 5000);
+    let intervalID = setInterval(this.reloadTransactions, 5000);
     this.loadTransactions();
     this.loadPPInfo();
     init();
@@ -110,7 +110,7 @@ class Dashboard extends React.Component {
         <Switch>  { /* TODO: Look up difference between switch and no switch */ }
           <AppliedRoute path={sidebarPaths.home} exact component={DBContent} appProps={this.state} />
 
-          <Route path={sidebarPaths.payee_add} exact component={PayeeAddContent} />
+          <AppliedRoute path={sidebarPaths.payee_add} exact component={PayeeAddContent} appProps={this.props.userInfo} />
           <Route path={sidebarPaths.payee_invite} exact component={PayeeInviteContent} />
           <AppliedRoute path={sidebarPaths.payee_manage} exact component={PayeeManageContent} appProps={this.state} />
 

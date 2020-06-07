@@ -2,12 +2,15 @@ import React, { Component } from 'react';
 import { Form, Alert, Row, Col, Table } from 'react-bootstrap';
 import LoadingButton from '../components/LoadingButton';
 
+const PROCESSOR_NAMES = {
+  A: "Currency Sender",
+  B: "Capital FX",
+  C: "Big Local Bank"
+};
+
 export default class PaymentSendProcessor extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      selected: 0
-    };
   }
 
   next = e => {
@@ -21,13 +24,13 @@ export default class PaymentSendProcessor extends Component {
   };
 
   select = e => {
-    this.setState({ selected: e.currentTarget.getAttribute("value") });
+    this.props.changeProcessor( e.currentTarget.getAttribute("value") );
   };
 
   render() {
     const { values, handleChange, processors } = this.props;
-    const { selected } = this.state;
-    console.log(selected);
+    const { processor } = values;
+    console.log(processor);
 
     return (
       <div>
@@ -38,7 +41,7 @@ export default class PaymentSendProcessor extends Component {
                 <thead>
                   <tr>
                     <th></th>
-                    <th>Processor ID</th>
+                    <th>Processor</th>
                     <th>Score</th>
                   </tr>
                 </thead>
@@ -50,12 +53,12 @@ export default class PaymentSendProcessor extends Component {
                         type="radio"
                         name="processor-radio"
                         value={i}
-                        checked={selected == i}
-                        onChange={e => this.setState({ selected: e.target.value })}
+                        checked={processor == i}
+                        onChange={this.props.handleChange("processor")}
                       />
                     </td>
-                    <td value={i} onClick={this.select}>{proc.id}</td>
-                    <td value={i} onClick={this.select}>{proc.score}</td>
+                    <td value={i} onClick={this.select}>{i === 0 ? PROCESSOR_NAMES[proc.id] + " (recommended)" : PROCESSOR_NAMES[proc.id]}</td>
+                    <td value={i} onClick={this.select}>{proc.score.toFixed(5)}</td>
                   </tr>)
                 }
                 </tbody>

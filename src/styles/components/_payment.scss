@@ -7,6 +7,25 @@
     }
   }
 
+  .currency-input-group {
+    position: relative;
+
+    > input {
+      padding-left: 20px;
+    }
+
+    > i {
+      position: absolute;
+      display: block;
+      transform: translate(0, -50%);
+      top: 50%;
+      pointer-events: none;
+      width: 25px;
+      text-align: center;
+      font-style: normal;
+    }
+  }
+
   #preference-label {
     display: flex;
     justify-content: space-between;
@@ -15,4 +34,31 @@
   .step-btns {
     margin-right: 0.5rem;
   }
+}
+
+.card {
+  border: none;
+
+  div.card-body {
+    padding: 5px;
+  }
+
+  .card-img-top {
+    max-width: 50px;
+    max-height: 50px;
+    align-self: center;
+  }
+
+  div.card-title {
+    text-align: center;
+
+    .badge {
+      margin-left: 5px;
+    }
+  }
+
+  div.list-group-item {
+    padding: 10px 10px;
+  }
+
 }
