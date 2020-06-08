@@ -84,6 +84,18 @@ export const init = () =>
     }
 }
 
+export const get_profit = (country, amount, isFx) =>
+{
+    var res = {}
+    var processors = info[country];
+    for(var p in processors)
+    {
+        processors[p].calc_profit(amount, isFx)
+        res[p] = processors[p].profit;
+    }
+    return res;
+}
+
 /**
  * Process a payment, outputs processors in sorted order.
  * @param {string} country  - target country code
