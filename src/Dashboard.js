@@ -16,7 +16,7 @@ import PaymentManageContent from "./Dashboard/PaymentManageContent";
 
 import Preference from "./Dashboard/Preference";
 
-import { fetchUserTransactions, fetchPPInfo, fetchUserInfo } from "./Dashboard/TransactionUtils"
+import { fetchUserTransactions, fetchPPInfo, fetchUserInfo, fetchAddressInfo } from "./Dashboard/TransactionUtils"
 import { init } from "./Non-ML/non-ml"
 
 
@@ -42,33 +42,33 @@ class Dashboard extends React.Component {
       sidebarDocked: mql.matches,
       sidebarOpen: false,
       transactions: null,
-      ppinfo: null
+      ppinfo: null,
     };
 
     this.mediaQueryChanged = this.mediaQueryChanged.bind(this);
     this.onSetSidebarOpen = this.onSetSidebarOpen.bind(this);
-    this.reloadTransactions = this.reloadTransactions.bind(this);
+    this.reloadData = this.reloadData.bind(this);
   }
 
   // called when the component is loaded
   componentDidMount() {
+    console.log(this.props.userInfo.uid, this.props.userInfo.user_type);
     mql.addListener(this.mediaQueryChanged);
-    let intervalID = setInterval(this.reloadTransactions, 5000);
+    let intervalID = setInterval(this.reloadData, 5000);
     this.loadTransactions();
     this.loadPPInfo();
     init();
   }
 
   async loadPPInfo() {
+    if (!this.props.isAuthenticated) return;
     const ppif = await fetchPPInfo(this.props.userInfo.uid, this.props.userInfo.user_type);
     const result = await fetchUserInfo(ppif);
     this.setState({ ppinfo: result });
   }
 
   async loadTransactions() {
-    if (!this.props.isAuthenticated) {
-      return;
-    }
+    if (!this.props.isAuthenticated) return;
     const trans = await fetchUserTransactions(this.props.userInfo.uid, this.props.userInfo.user_type);
     this.setState({ transactions: trans });
   }
@@ -78,8 +78,10 @@ class Dashboard extends React.Component {
     mql.removeListener(this.mediaQueryChanged);
   }
 
-  reloadTransactions() {
+  reloadData() {
     this.loadTransactions();
+    this.loadPPInfo();
+    // console.log(this.state);
   }
 
   onSetSidebarOpen(open) {
@@ -108,14 +110,14 @@ class Dashboard extends React.Component {
 
         {/* Base on different path, router-dom will render different component */}
         <Switch>  { /* TODO: Look up difference between switch and no switch */ }
-          <AppliedRoute path={sidebarPaths.home} exact component={DBContent} appProps={this.state} />
+          <AppliedRoute path={sidebarPaths.home} exact component={DBContent} appProps={{...this.state, userType: this.props.userInfo.user_type}} />
 
           <AppliedRoute path={sidebarPaths.payee_add} exact component={PayeeAddContent} appProps={this.props.userInfo} />
-          <Route path={sidebarPaths.payee_invite} exact component={PayeeInviteContent} />
+          <AppliedRoute path={sidebarPaths.payee_invite} exact component={PayeeInviteContent} appProps={this.state} />
           <AppliedRoute path={sidebarPaths.payee_manage} exact component={PayeeManageContent} appProps={this.state} />
 
           <AppliedRoute path={sidebarPaths.payment_send} exact component={PaymentSendContent} appProps={this.state} />
-          <AppliedRoute path={sidebarPaths.payment_manage} exact component={PaymentManageContent} appProps={this.state} />
+          <AppliedRoute path={sidebarPaths.payment_manage} exact component={PaymentManageContent} appProps={{...this.state, userType: this.props.userInfo.user_type}} />
 
           <Route path={sidebarPaths.preference} exact component={Preference} />
         </Switch>

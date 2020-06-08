@@ -1,12 +1,14 @@
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
+import ReactTooltip from "react-tooltip";
 import MapChart from '../components/MapChart';
 
-export default class PayeeInvite extends Component {
-  render() {
-    return (
-      <div className="dashboard">
-        <MapChart />
-      </div>
-    );  
-  }
+export default function PayeeInvite(props) {
+  const [content, setContent] = useState("");
+
+  return (
+    <div className="dashboard">
+      <MapChart setTooltipContent={setContent} {...props} />
+      <ReactTooltip html={true}>{content}</ReactTooltip>
+    </div>
+  );
 }

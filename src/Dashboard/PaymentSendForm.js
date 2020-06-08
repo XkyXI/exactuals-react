@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Badge, Form, Row, Col, OverlayTrigger, Popover, Card, ListGroup } from 'react-bootstrap';
+import { Badge, Form, Row, Col, OverlayTrigger, Popover, Card, ListGroup, Button } from 'react-bootstrap';
 import LoadingButton from '../components/LoadingButton';
 
 const STATUS_BADGE = {
@@ -8,9 +8,11 @@ const STATUS_BADGE = {
   "Ready": "info",
   "Delivered": "success",
   "Cancelled": "warning",
+  "Error": "danger",
   "Default": "info"
 };
 
+const COLORS = [ "danger", "danger", "danger", "warning", "success", "success" ]
 
 export default class PaymentSendForm extends Component {
   constructor(props) {
@@ -33,6 +35,7 @@ export default class PaymentSendForm extends Component {
     
     const n = parseInt(ppid);
     let userinfo = n >= 0 ? ppinfo[n].info : {};
+    let addressinfo = n >= 0 ? ppinfo[n].address : {};
 
     const popover = (
       <Popover id="popover-basic">
@@ -44,11 +47,18 @@ export default class PaymentSendForm extends Component {
               <Card.Body>
                 <Card.Title>
                   {userinfo.first_name + " " + userinfo.last_name}
-                  <Badge variant={userinfo.first_name === "Alice" ? "secondary" : "primary"}>FX</Badge>
+                  <Badge variant={addressinfo.country === "USA" ? "secondary" : "primary"}>FX</Badge>
                 </Card.Title>
                 <ListGroup variant="flush">
                   <ListGroup.Item>
-                    <b>Country:</b> {userinfo.first_name === "Alice" ? "USA" : "Brazil"}
+                    <b>Satisfaction: </b>
+                    { ppinfo[n].feedback_count === 0
+                      ? <Button variant="secondary">? / 5</Button>
+                      : <Button variant={COLORS[Math.floor(ppinfo[n].satisfaction / ppinfo[n].feedback_count)]}>{(ppinfo[n].satisfaction / ppinfo[n].feedback_count).toFixed(1)} / 5</Button>
+                    }
+                  </ListGroup.Item>
+                  <ListGroup.Item>
+                    <b>Country:</b> {addressinfo.country}
                   </ListGroup.Item>
                   <ListGroup.Item>
                     <b>Email:</b> <a href={`mailto:${userinfo.email}`}>{userinfo.email}</a>
@@ -59,9 +69,9 @@ export default class PaymentSendForm extends Component {
                   <ListGroup.Item>
                     { ppinfo[n].trans.length === 0 ? <>No Recent Transactions</> :
                       <>
-                        <b>Most Recent Transaction:</b> <br></br>
-                        <b>Amount:</b> ${ppinfo[n].trans[0].amount} <br></br>
-                        <b>Date:</b> {new Date(ppinfo[n].trans[0].date).toISOString().substring(0, 10)} <br></br>
+                        <b>Most Recent Transaction:</b> <br/>
+                        <b>Amount:</b> ${ppinfo[n].trans[0].amount} <br/>
+                        <b>Date:</b> {new Date(ppinfo[n].trans[0].date).toISOString().substring(0, 10)} <br/>
                         <b>Status:</b> <Badge variant={this.getBadge(ppinfo[n].trans[0].status)}>{ppinfo[n].trans[0].status}</Badge>
                       </>
                     }
@@ -105,6 +115,7 @@ export default class PaymentSendForm extends Component {
               <Form.Control as="select" name="method" value={method} onChange={handleChange("method")}>
                 <option value="" disabled style={{display: "none"}}>-- Select payment method --</option>
                 <option>ACH</option>
+                <option>IACH</option>
                 <option>Wire</option>
               </Form.Control>
             </Col>

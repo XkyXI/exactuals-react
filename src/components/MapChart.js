@@ -1,45 +1,108 @@
-import React from "react";
+import React, { Component } from "react";
 import {
   ComposableMap,
   Geographies,
   Geography,
-  Annotation,
   ZoomableGroup,
-  Marker
 } from "react-simple-maps";
+
+import { shadeColor } from "../Dashboard/ColorUtils";
 
 const geoUrl =
   "https://raw.githubusercontent.com/zcreativelabs/react-simple-maps/master/topojson-maps/world-110m.json";
 
-  const markers = [
-  { markerOffset: -15, name: "Alice Gorman", coordinates: [2.3522, 48.8566] },
-  { markerOffset: -15, name: "Annie Edison", coordinates: [-77.0428, -12.0464] }
-];
-  
-const MapChart = () => {
-  return (
-    <ComposableMap>
-      <Geographies geography={geoUrl}>
-        {({ geographies }) =>
-          geographies.map(geo => <Geography key={geo.rsmKey} geography={geo} fill="#EAEAEC"
-          stroke="#D6D6DA"/>)
+const defaultColors = [ "#DC3545", "#DC3545", "#DC3545", "#FFC107", "#28A745", "#28A745" ];
+
+export default class MapChart extends Component {
+  computeSatisfaction = () => {
+    const { ppinfo } = this.props;
+    let countryTooltip = {};
+    let countryScore = {};
+    let countryFeedCount = {};
+
+    if (ppinfo) {
+      ppinfo.forEach(info => {
+        if (!(info.address.country in countryTooltip)) {
+          countryTooltip[info.address.country] = "";
+          countryScore[info.address.country] = -1;
+          countryFeedCount[info.address.country] = -1;
         }
-      </Geographies>
-      {markers.map(({ name, coordinates, markerOffset }) => (
-        <Marker key={name} coordinates={coordinates}>
-          <circle r={5} fill="#F00" stroke="#fff" strokeWidth={2} />
-          <text
-            textAnchor="middle"
-            y={markerOffset}
-            style={{ fontFamily: "system-ui", fill: "#5D5A6D", fontSize: "10px" }}
-          >
-            {name}
-          </text>
-        </Marker>
-      ))}
+        countryTooltip[info.address.country] += `<br/>${info.info.first_name} ${info.info.last_name}: ${info.feedback_count === 0 ? "?" : (info.satisfaction / info.feedback_count).toFixed(1)} (${info.feedback_count})`;
+        if (info.feedback_count > 0) {
+          if (countryFeedCount[info.address.country] === -1) {
+            countryScore[info.address.country] = 0;
+            countryFeedCount[info.address.country] = 0;
+          }
+          countryScore[info.address.country] += info.satisfaction;
+          countryFeedCount[info.address.country] += info.feedback_count;
+        }
+      });
+      for (let key in countryScore) {
+        if (countryFeedCount[key] !== -1)
+          countryScore[key] = (countryScore[key] / countryFeedCount[key]).toFixed(1);
+        countryTooltip[key] = `<center><b>${key}</b></center><b>Average Satisfaction:</b> ${countryScore[key] === -1 ? "?" : countryScore[key]}<br/>` + countryTooltip[key];
+      }
+    }
+    return { countryScore, countryTooltip };
+  };
 
-    </ComposableMap>
-  );
+  getCountry = (properties, countryScore) => {
+    const { NAME, CONTINENT, ISO_A3 } = properties;
+    if (NAME in countryScore) return NAME;
+    if (CONTINENT in countryScore) return CONTINENT;
+    if (ISO_A3 in countryScore) return ISO_A3;
+    return "";
+  };
+
+  getDefaultColor = (properties, countryScore) => {
+    const value = this.getCountry(properties, countryScore);
+    if (value === "") return "#D6D6DA";
+    const score = Math.floor(countryScore[value]);
+    if (score === -1) return "#6C757D";
+    return defaultColors[score];
+  };
+
+  getHoverColor = (properties, countryScore) => {
+    return shadeColor(this.getDefaultColor(properties, countryScore), -20);
+  };
+
+  render() {
+    const { countryScore, countryTooltip } = this.computeSatisfaction();
+
+    return (
+      <ComposableMap data-tip="" projectionConfig={{ scale: 200 }}>
+        <ZoomableGroup>
+          <Geographies geography={geoUrl}>
+            {({ geographies }) =>
+              geographies.map(geo => (
+                <>
+                { geo.properties.ABBREV === "U.S.A." && console.log(geo.properties) }
+                <Geography
+                  key={geo.rsmKey}
+                  geography={geo}
+                  onMouseEnter={() => {
+                    const value = this.getCountry(geo.properties, countryScore);
+                    this.props.setTooltipContent(countryTooltip[value]);
+                  }}
+                  onMouseLeave={() => {
+                    this.props.setTooltipContent("");
+                  }}
+                  style={{
+                    default: {
+                      fill: `${ this.getDefaultColor(geo.properties, countryScore) }`,
+                      outline: "none"
+                    },
+                    hover: {
+                      fill: `${ this.getHoverColor(geo.properties, countryScore) }`,
+                      outline: "none"
+                    },
+                  }}
+                /></>
+              ))
+            }
+          </Geographies>
+        </ZoomableGroup>
+      </ComposableMap>
+    );
+  }
 };
-
-export default MapChart;

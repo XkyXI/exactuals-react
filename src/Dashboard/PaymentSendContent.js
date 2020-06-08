@@ -6,12 +6,24 @@ import PaymentSendForm from "./PaymentSendForm";
 import PaymentSendProcessor from "./PaymentSendProcessor";
 import PaymentSendConfirm from "./PaymentSendConfirm";
 
-import { process_payment } from "../Non-ML/non-ml"
-import { Alert } from 'react-bootstrap';
+import { process_payment, get_profit } from "../Non-ML/non-ml"
 
 const TRANSACTION_API = "http://localhost:8000/transaction/"
 const PROCESSOR_API = "http://localhost:8000/user_data/"
 
+const PROCS = { 1: "A", 2: "B", 3: "C" };
+
+const CTR_MAPPING = {
+  USA: 840,
+  China: 156,
+  Europe: 250,
+  Brazil: 76,
+  Canada: 840,
+  Mexico: 484,
+  Germany: 276,
+  India: 356,
+  Russia: 276
+};
 
 export default class PaymentSend extends Component {
   constructor(props) {
@@ -29,10 +41,12 @@ export default class PaymentSend extends Component {
       // step 2
       processor: 0,
       processors: [ 
-        { id: "A", score: 0 },
-        { id: "B", score: 0 },
-        { id: "C", score: 0 }
+        { id: "A", score: 0, info: undefined },
+        { id: "B", score: 0, info: undefined },
+        { id: "C", score: 0, info: undefined }
       ],
+      mlProcessors: null, 
+      mlStatus: -1,
 
       status: NaN
     };
@@ -44,45 +58,47 @@ export default class PaymentSend extends Component {
     const { weight, ppid, amount } = this.state;
     if (ppid === "" || amount === "") return;
 
+    const info = this.props.ppinfo[ppid];
+
+    const ccode = CTR_MAPPING[info.address.country];
     const w = weight / 10;
-    const result = process_payment(840, parseFloat(amount), ppid === "0", 1.0 - w, w);
+    const isFx = ccode === 840;
+    const result = process_payment(ccode, parseFloat(amount), isFx, 1.0 - w, w);
     let updatedProcessors = [];
     result.sorted_keys.forEach(proc => {
-      updatedProcessors.unshift({ id: proc, score: result.processors[proc].final_score });
+      updatedProcessors.unshift({ id: proc, score: result.processors[proc].final_score, info: result.processors[proc] });
     });
 
     this.setState({ processors: updatedProcessors });
 
-    // const [ pp, payor_id, payee_id ] = ppid.split(",");
+    const profits = get_profit(ccode, amount, isFx);
+    let formData = new FormData();
+    formData.append("amount", amount);
+    formData.append("original_currency", 840);
+    formData.append("target_currency", ccode);
+    formData.append("payor_id", info.payor_id);
+    formData.append("payee_id", info.payee_id);
+    formData.append("payor_payee_id", info.ppid);
+    formData.append("fx", isFx);
+    formData.append("country", ccode);
 
-    // const country = 840;
-    // const currency = 840; // for USD and USA
-    // const cost = 10;
-    // let formData = new FormData();
-    // formData.append("amount", amount);
-    // formData.append("original_currency", currency);
-    // formData.append("target_currency", currency);
-    // formData.append("transaction_cost", cost);
-    // formData.append("payor_id", payor_id);
-    // formData.append("payee_id", payee_id);
-    // formData.append("payor_payee_id", pp);
-    // formData.append("country", country);
+    let mlProcs = {};
+    for (let proc in PROCS) {
+      formData.set("processor", proc);
+      formData.set("transaction_profit", (profits[PROCS[proc]] * weight).toFixed(2));
 
-    // let updatedProcessors = [];
-    // processors.forEach(proc => { 
-    //   formData.set("processor", proc.id);
+      let requestOptions = {
+        method: "POST", 
+        body: formData
+      };
 
-    //   let requestOptions = {
-    //     method: "POST", 
-    //     body: formData
-    //   };
+      fetch(PROCESSOR_API, requestOptions)
+        .then(response => response.json())
+        .then(result => { mlProcs[proc] = result[PROCS[proc]]; })
+        .catch(error => console.log('error', error));
+    }
 
-    //   fetch(PROCESSOR_API, requestOptions)
-    //     .then(response => response.json())
-    //     .then(result => { updatedProcessors.unshift({ id: proc.id, score: result.payee_satisfaction }); this.setState({ processors: updatedProcessors }); })
-    //     .catch(error => console.log('error', error));
-    // });
-    
+    this.setState({ mlProcessors: mlProcs });
   }
 
   handleSubmit() {
@@ -106,6 +122,7 @@ export default class PaymentSend extends Component {
     formdata.append("status", status);
     formdata.append("status_date", date);
     formdata.append("ppid", this.props.ppinfo[parseInt(ppid)].ppid);
+    formdata.append("processor", parseInt(processor) + 1);
 
     let requestOptions = {
       method: 'POST',
@@ -143,7 +160,7 @@ export default class PaymentSend extends Component {
   };
 
   showStep = () => {
-    const { step, weight, ppid, amount, method, memo, processor, processors, status } = this.state;
+    const { step, weight, ppid, amount, method, memo, processor, processors, mlProcessors, status } = this.state;
     let name = "";
     if (ppid)
       name = this.props.ppinfo[parseInt(ppid)].info.first_name + " " + this.props.ppinfo[parseInt(ppid)].info.last_name;
@@ -167,6 +184,7 @@ export default class PaymentSend extends Component {
             nextStep={this.nextStep}
             prevStep={this.prevStep}
             processors={processors}
+            mlProcessors={mlProcessors}
             changeProcessor={this.changeProcessor}
             values={values}
           />

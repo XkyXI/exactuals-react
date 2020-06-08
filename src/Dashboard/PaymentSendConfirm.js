@@ -65,8 +65,8 @@ export default class PaymentSendProcessor extends Component {
             <Col sm={{ span: 10, offset: 2 }}>
               { isNaN(status) ?
                 <>
-                  <LoadingButton className="step-btns" isLoading={false} onClick={this.prev} variant="secondary">Prev</LoadingButton>
-                  <LoadingButton className="step-btns" isLoading={false} onClick={this.next}>Send</LoadingButton>
+                  <LoadingButton className="step-btns" isLoading={false} onClick={this.prev} variant="secondary">Back</LoadingButton>
+                  <LoadingButton className="step-btns" isLoading={false} onClick={this.next}>Confirm</LoadingButton>
                 </>
                 : <LoadingButton className="step-btns" isLoading={false} onClick={this.done}>Done</LoadingButton>
               }

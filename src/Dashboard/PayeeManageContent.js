@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { Table } from 'react-bootstrap';
+import { Table, Button } from 'react-bootstrap';
+
+const COLORS = [ "danger", "danger", "danger", "warning", "success", "success" ]
 
 export default class PayeeManage extends Component {
   render() {
@@ -9,10 +11,11 @@ export default class PayeeManage extends Component {
         <Table responsive striped bordered hover>
           <thead>
             <tr>
+              <th>#</th>
               <th>ID</th>
               <th>Name</th>
               <th>Email</th>
-              {/* <th>Satisfaction</th> */}
+              <th>Avg. Satisfaction</th>
               <th>Last Transaction</th>
               <th>Transactions</th>
               <th>Date Joined</th>
@@ -20,11 +23,17 @@ export default class PayeeManage extends Component {
           </thead>
           <tbody>
           { this.props.ppinfo &&
-            this.props.ppinfo.map((ppinfo) => 
+            this.props.ppinfo.map((ppinfo, i) => 
             <tr key={ppinfo.ppid}>
+              <td>{i + 1}</td>
               <td>{ppinfo.payee_id}</td>
               <td>{ppinfo.info.first_name + " " + ppinfo.info.last_name}</td>
-              <td>{ppinfo.info.email}</td>
+              <td><a href={`mailto:${ppinfo.info.email}`}>{ppinfo.info.email}</a></td>
+              <td>
+                { ppinfo.feedback_count === 0
+                  ? <Button variant="secondary">? / 5</Button>
+                  : <Button variant={COLORS[Math.floor(ppinfo.satisfaction / ppinfo.feedback_count)]}>{(ppinfo.satisfaction / ppinfo.feedback_count).toFixed(1)} / 5</Button>
+                }</td>
               <td>{ppinfo.trans.length > 0 ? "$" + ppinfo.trans[0].amount : "None"}</td>
               <td>{ppinfo.trans.length} times</td>
               <td>{new Date(ppinfo.info.created_on).toISOString().substring(0, 10)}</td>
