@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Table, Button } from 'react-bootstrap';
-
-const COLORS = [ "danger", "danger", "danger", "warning", "success", "success" ]
+import { getScoreColor } from "./ColorUtils";
 
 export default class PayeeManage extends Component {
   render() {
@@ -32,7 +31,7 @@ export default class PayeeManage extends Component {
               <td>
                 { ppinfo.feedback_count === 0
                   ? <Button variant="secondary">? / 5</Button>
-                  : <Button variant={COLORS[Math.floor(ppinfo.satisfaction / ppinfo.feedback_count)]}>{(ppinfo.satisfaction / ppinfo.feedback_count).toFixed(1)} / 5</Button>
+                  : <Button variant={getScoreColor(ppinfo.satisfaction / ppinfo.feedback_count)}>{(ppinfo.satisfaction / ppinfo.feedback_count).toFixed(1)} / 5</Button>
                 }</td>
               <td>{ppinfo.trans.length > 0 ? "$" + ppinfo.trans[0].amount : "None"}</td>
               <td>{ppinfo.trans.length} times</td>

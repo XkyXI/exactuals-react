@@ -2,44 +2,20 @@ import React, { Component } from 'react';
 import { Badge, Table, ButtonGroup, Button } from 'react-bootstrap';
 
 import { isPayee, updateSatisfaction } from "./TransactionUtils"
-
-const STATUS_BADGE = {
-  "New": "primary",
-  "Processing": "primary",
-  "Ready": "info",
-  "Delivered": "success",
-  "Cancelled": "warning",
-  "Error": "danger",
-  "Default": "info"
-};
-
-const COLORS = [ "danger", "danger", "warning", "success", "success" ]
-
-function getBadge(status) {
-  return STATUS_BADGE[status] !== undefined ? STATUS_BADGE[status] : STATUS_BADGE["Default"];
-}
+import { getScoreColor, getStatusColor } from "./ColorUtils";
 
 export default class TransactionTable extends Component {
   constructor(props) {
     super(props);
+    // The feedbacks object represent which transactions had been rated
+    // It is needed to change the state immediately when the user
+    // click on a rating thus triggering an re-render
     this.state = {
       feedbacks: {}
     };
   }
 
-  componentDidUpdate(nextProps) {
-    const { transactions } = this.props;
-    if (transactions && nextProps.transactions !== transactions) {
-      let feeds = {};
-      transactions.forEach(tran => {
-        if (tran.satisfaction !== null)
-          feeds[tran.tid] = tran.satisfaction;
-      });
-      this.setState({ feedbacks: feeds });
-    }
-   }
-
-  componentDidMount() {
+  updateFeedbacks() {
     const { transactions } = this.props;
     if (transactions) {
       let feeds = {};
@@ -49,6 +25,17 @@ export default class TransactionTable extends Component {
       });
       this.setState({ feedbacks: feeds });
     }
+  }
+
+  componentDidUpdate(nextProps) {
+    const { transactions } = this.props;
+    if (nextProps.transactions !== transactions) {
+      this.updateFeedbacks();
+    }
+  }
+
+  componentDidMount() {
+    this.updateFeedbacks();
   }
 
   feedback = (ppid, tid, val) => {
@@ -94,13 +81,13 @@ export default class TransactionTable extends Component {
             <td>{ppid[trans.ppid].first_name + " " + ppid[trans.ppid].last_name}</td>
             <td>{trans.disbursement}</td>
             <td>${trans.amount}</td>
-            <td><Badge variant={getBadge(trans.status)}>{trans.status}</Badge></td>
+            <td><Badge variant={getStatusColor(trans.status)}>{trans.status}</Badge></td>
             <td>
               <ButtonGroup>
                 { trans.tid in feedbacks 
-                  ? <Button variant={COLORS[feedbacks[trans.tid]-1]}>{feedbacks[trans.tid]} / 5</Button>
+                  ? <Button variant={getScoreColor(feedbacks[trans.tid])}>{feedbacks[trans.tid]} / 5</Button>
                   : isPayee(this.props.userType)
-                  ? <>
+                  ? <> 
                       <Button variant="danger" onClick={() => this.feedback(trans.ppid, trans.tid, 1)}>1</Button>
                       <Button variant="danger" onClick={() => this.feedback(trans.ppid, trans.tid, 2)}>2</Button>
                       <Button variant="warning" onClick={() => this.feedback(trans.ppid, trans.tid, 3)}>3</Button>

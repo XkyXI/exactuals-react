@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, Alert, Row, Col, Table, Tooltip, OverlayTrigger, Popover, ListGroup } from 'react-bootstrap';
+import { Form, Row, Col, Table, OverlayTrigger, Popover, ListGroup, Badge } from 'react-bootstrap';
 import LoadingButton from '../components/LoadingButton';
 
 const PROCESSOR_NAMES = {
@@ -9,10 +9,6 @@ const PROCESSOR_NAMES = {
 };
 
 export default class PaymentSendProcessor extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   next = e => {
     e.preventDefault();
     this.props.nextStep();
@@ -28,6 +24,8 @@ export default class PaymentSendProcessor extends Component {
   };
 
   getComment = (i) => {
+    // compute which processor is recommended by the AI and the algorithm
+    // then return the corresponding badge
     const { mlProcessors } = this.props;
     if (mlProcessors) {
       let mlStat = -1;
@@ -41,12 +39,17 @@ export default class PaymentSendProcessor extends Component {
       mlStat -= 1;
       if (i === 0) {
         if (i === mlStat) {
-          return " (recommended) (AI recommended) ";
+          return (
+            <>
+              <Badge variant="info">Recommended</Badge>
+              <Badge variant="primary">AI Recommended</Badge>
+            </>
+          );
         } else {
-          return " (recommended)";
+          return <Badge variant="info">Recommended</Badge>;
         }
       }
-      return i === mlStat ? " (AI recommended)" : "";  
+      return i === mlStat ? <Badge variant="primary">AI Recommended</Badge> : "";
     }
   };
 
@@ -61,7 +64,7 @@ export default class PaymentSendProcessor extends Component {
         <ListGroup variant="flush">
           <ListGroup.Item><b>Profit: </b>{proc.profit.toFixed(2)} </ListGroup.Item>
           <ListGroup.Item><b>Avg. Rating: </b>{proc.average_rating.toFixed(2)} </ListGroup.Item>
-          <ListGroup.Item><b>profit Score: </b>{proc.profit_score.toFixed(2)} </ListGroup.Item>
+          <ListGroup.Item><b>Profit Score: </b>{proc.profit_score.toFixed(2)} </ListGroup.Item>
           <ListGroup.Item><b>Satisfactory Score: </b>{proc.satisfactory_score.toFixed(2)} </ListGroup.Item>
           <ListGroup.Item><b>FX Margin: </b>{proc.fx_margin.toFixed(2)} </ListGroup.Item>
           <ListGroup.Item><b>Revenue Share: </b>{proc.revenue_share.toFixed(2)} </ListGroup.Item>
@@ -70,13 +73,12 @@ export default class PaymentSendProcessor extends Component {
         </ListGroup>
         </Popover.Content>
       </Popover>
-      );
+    );
   }
-  
+
   render() {
     const { values, handleChange, processors, mlProcessors } = this.props;
     const { processor } = values;
-    console.log(mlProcessors);
 
     return (
       <div>
@@ -100,7 +102,7 @@ export default class PaymentSendProcessor extends Component {
                         type="radio"
                         name="processor-radio"
                         value={i}
-                        checked={processor == i}
+                        checked={parseInt(processor) === i}
                         onChange={handleChange("processor")}
                       />
                     </td>
@@ -109,7 +111,8 @@ export default class PaymentSendProcessor extends Component {
                       key={i}
                       overlay={(props) => this.renderTooltip(props, i, proc.id)}>
                     <td value={i} onClick={this.select}>
-                      { PROCESSOR_NAMES[proc.id] + this.getComment(i) }
+                      { PROCESSOR_NAMES[proc.id] } 
+                      { this.getComment(i) }
                     </td>
                     </OverlayTrigger>
                     <td value={i} onClick={this.select}>{mlProcessors[i+1] && mlProcessors[i+1].toFixed(5)}</td>

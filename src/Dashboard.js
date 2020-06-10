@@ -8,7 +8,7 @@ import DBNavbar from "./Dashboard/DashboardNavbar";
 import DBContent from "./Dashboard/DashboardContent";
 
 import PayeeAddContent from "./Dashboard/PayeeAddContent";
-import PayeeInviteContent from "./Dashboard/PayeeInviteContent";
+import PayeeView from "./Dashboard/PayeeViewContent";
 import PayeeManageContent from "./Dashboard/PayeeManageContent";
 
 import PaymentSendContent from "./Dashboard/PaymentSendContent";
@@ -16,7 +16,7 @@ import PaymentManageContent from "./Dashboard/PaymentManageContent";
 
 import Preference from "./Dashboard/Preference";
 
-import { fetchUserTransactions, fetchPPInfo, fetchUserInfo, fetchAddressInfo } from "./Dashboard/TransactionUtils"
+import { fetchUserTransactions, fetchPPInfo, fetchUserInfo } from "./Dashboard/TransactionUtils"
 import { init } from "./Non-ML/non-ml"
 
 
@@ -27,7 +27,7 @@ const mql = window.matchMedia(`(min-width: 768px)`);
 const sidebarPaths = {
   home: "/dashboard/home",
   payee_add: "/dashboard/payee/add",
-  payee_invite: "/dashboard/payee/invite",
+  payee_view: "/dashboard/payee/view",
   payee_manage: "/dashboard/payee/manage",
   payment_send: "/dashboard/payment/send",
   payment_manage: "/dashboard/payment/manage",
@@ -54,7 +54,7 @@ class Dashboard extends React.Component {
   componentDidMount() {
     console.log(this.props.userInfo.uid, this.props.userInfo.user_type);
     mql.addListener(this.mediaQueryChanged);
-    let intervalID = setInterval(this.reloadData, 5000);
+    setInterval(this.reloadData, 5000); // fetch user info every X seconds
     this.loadTransactions();
     this.loadPPInfo();
     init();
@@ -81,7 +81,6 @@ class Dashboard extends React.Component {
   reloadData() {
     this.loadTransactions();
     this.loadPPInfo();
-    // console.log(this.state);
   }
 
   onSetSidebarOpen(open) {
@@ -113,7 +112,7 @@ class Dashboard extends React.Component {
           <AppliedRoute path={sidebarPaths.home} exact component={DBContent} appProps={{...this.state, userType: this.props.userInfo.user_type}} />
 
           <AppliedRoute path={sidebarPaths.payee_add} exact component={PayeeAddContent} appProps={this.props.userInfo} />
-          <AppliedRoute path={sidebarPaths.payee_invite} exact component={PayeeInviteContent} appProps={this.state} />
+          <AppliedRoute path={sidebarPaths.payee_view} exact component={PayeeView} appProps={this.state} />
           <AppliedRoute path={sidebarPaths.payee_manage} exact component={PayeeManageContent} appProps={this.state} />
 
           <AppliedRoute path={sidebarPaths.payment_send} exact component={PaymentSendContent} appProps={this.state} />

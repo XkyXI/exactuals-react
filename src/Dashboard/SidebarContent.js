@@ -30,7 +30,6 @@ export default class SidebarContent extends Component {
         </Link>
 
         {/* TODO: Consider whether to use LinkContainer from react-router-boostrap */}
-        {/* TODO: Use react-fontawesome components to use icons */}
 
         {/* List of navigation link */}
         <ListGroup variant="flush">
@@ -51,7 +50,7 @@ export default class SidebarContent extends Component {
                   <FontAwesomeIcon icon={faUsers} />
                   Manage Payee
                 </NavLink>
-                <NavLink to={this.props.paths.payee_invite} className="list-group-item list-group-item-action">
+                <NavLink to={this.props.paths.payee_view} className="list-group-item list-group-item-action">
                   <FontAwesomeIcon icon={faMap} />
                   View Payee
                 </NavLink>

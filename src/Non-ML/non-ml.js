@@ -1,16 +1,16 @@
 var info;
 
-var countries_mapping =
-{
-    410: "South Korea",
-    156: "China",
-    840: "United States",
-    250: "France",
-    76: "Brazil",
-    276: "Germany",
-    484: "Mexico",
-    356: "India"
-}
+// var countries_mapping =
+// {
+//     410: "South Korea",
+//     156: "China",
+//     840: "United States",
+//     250: "France",
+//     76: "Brazil",
+//     276: "Germany",
+//     484: "Mexico",
+//     356: "India"
+// }
 class Processor {
     constructor(c, n) {
         this.country = c;
@@ -112,14 +112,15 @@ export const process_payment = (country, amount, isFx, profit_weight, satisfacto
     var maxSatis  = Number.NEGATIVE_INFINITY;
     var minProfitScore = Number.POSITIVE_INFINITY;
     var processors = info[country];
-
-    for(var p in processors)
+    
+    let p;
+    for(p in processors)
     {
         maxProfit = Math.max(processors[p].calc_profit(amount, isFx), maxProfit);
         maxSatis = Math.max(processors[p].average_rating, maxSatis);
     }
 
-    for(var p in processors)
+    for(p in processors)
     {
         var p_score = processors[p].profit / maxProfit;
         processors[p].profit_score = maxProfit < 0 ? -p_score : p_score;
@@ -129,7 +130,7 @@ export const process_payment = (country, amount, isFx, profit_weight, satisfacto
 
     
     var rand = Math.random();
-    for(var p in processors)
+    for(p in processors)
     {
         if(minProfitScore < 0)
         {

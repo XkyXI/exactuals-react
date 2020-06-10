@@ -1,27 +1,12 @@
 import React, { Component } from 'react';
 import { Badge, Form, Row, Col, OverlayTrigger, Popover, Card, ListGroup, Button } from 'react-bootstrap';
 import LoadingButton from '../components/LoadingButton';
-
-const STATUS_BADGE = {
-  "New": "primary",
-  "Processing": "primary",
-  "Ready": "info",
-  "Delivered": "success",
-  "Cancelled": "warning",
-  "Error": "danger",
-  "Default": "info"
-};
-
-const COLORS = [ "danger", "danger", "danger", "warning", "success", "success" ]
+import { getScoreColor, getStatusColor } from "./ColorUtils";
 
 export default class PaymentSendForm extends Component {
   constructor(props) {
     super(props);
     this.ref = React.createRef();
-  }
-
-  getBadge = (status) => {
-    return STATUS_BADGE[status] !== undefined ? STATUS_BADGE[status] : STATUS_BADGE["Default"];
   }
   
   next = e => {
@@ -54,7 +39,7 @@ export default class PaymentSendForm extends Component {
                     <b>Satisfaction: </b>
                     { ppinfo[n].feedback_count === 0
                       ? <Button variant="secondary">? / 5</Button>
-                      : <Button variant={COLORS[Math.floor(ppinfo[n].satisfaction / ppinfo[n].feedback_count)]}>{(ppinfo[n].satisfaction / ppinfo[n].feedback_count).toFixed(1)} / 5</Button>
+                      : <Button variant={getScoreColor(ppinfo[n].satisfaction / ppinfo[n].feedback_count)}>{(ppinfo[n].satisfaction / ppinfo[n].feedback_count).toFixed(1)} / 5</Button>
                     }
                   </ListGroup.Item>
                   <ListGroup.Item>
@@ -72,7 +57,7 @@ export default class PaymentSendForm extends Component {
                         <b>Most Recent Transaction:</b> <br/>
                         <b>Amount:</b> ${ppinfo[n].trans[0].amount} <br/>
                         <b>Date:</b> {new Date(ppinfo[n].trans[0].date).toISOString().substring(0, 10)} <br/>
-                        <b>Status:</b> <Badge variant={this.getBadge(ppinfo[n].trans[0].status)}>{ppinfo[n].trans[0].status}</Badge>
+                        <b>Status:</b> <Badge variant={getStatusColor(ppinfo[n].trans[0].status)}>{ppinfo[n].trans[0].status}</Badge>
                       </>
                     }
                   </ListGroup.Item>

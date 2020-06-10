@@ -19,8 +19,6 @@ class Login extends Component {
   }
 
   signin(username, password) {
-    // TODO: validate username and password by making a request
-    // TODO: provide more useful error messages
     // TODO: persistent login on refresh
 
     this.setState({ isLoading: true });

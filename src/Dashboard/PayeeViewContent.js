@@ -1,8 +1,8 @@
-import React, { Component, useState } from 'react';
+import React, { useState } from 'react';
 import ReactTooltip from "react-tooltip";
 import MapChart from '../components/MapChart';
 
-export default function PayeeInvite(props) {
+export default function PayeeView(props) {
   const [content, setContent] = useState("");
 
   return (

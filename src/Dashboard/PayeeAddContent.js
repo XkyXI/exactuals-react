@@ -17,7 +17,7 @@ export default class PayeeAdd extends Component {
     evt.preventDefault();
     const { items } = this.state;
 
-    if (items.length == 0) return;
+    if (items.length === 0) return;
 
     this.setState({ isLoading: true });
 

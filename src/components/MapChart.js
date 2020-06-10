@@ -11,10 +11,13 @@ import { shadeColor } from "../Dashboard/ColorUtils";
 const geoUrl =
   "https://raw.githubusercontent.com/zcreativelabs/react-simple-maps/master/topojson-maps/world-110m.json";
 
-const defaultColors = [ "#DC3545", "#DC3545", "#DC3545", "#FFC107", "#28A745", "#28A745" ];
+const DEFAULT_COLORS = [ "#DC3545", "#DC3545", "#DC3545", "#FFC107", "#28A745", "#28A745" ];
 
 export default class MapChart extends Component {
   computeSatisfaction = () => {
+    // compute the average satisfaction of every country that has payee
+    // compute the corresponding tooltip of every country that has payee
+
     const { ppinfo } = this.props;
     let countryTooltip = {};
     let countryScore = {};
@@ -59,7 +62,7 @@ export default class MapChart extends Component {
     if (value === "") return "#D6D6DA";
     const score = Math.floor(countryScore[value]);
     if (score === -1) return "#6C757D";
-    return defaultColors[score];
+    return DEFAULT_COLORS[score];
   };
 
   getHoverColor = (properties, countryScore) => {
@@ -76,7 +79,6 @@ export default class MapChart extends Component {
             {({ geographies }) =>
               geographies.map(geo => (
                 <>
-                { geo.properties.ABBREV === "U.S.A." && console.log(geo.properties) }
                 <Geography
                   key={geo.rsmKey}
                   geography={geo}

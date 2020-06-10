@@ -200,6 +200,9 @@ export default class PaymentSend extends Component {
             history={this.props.history}
           />
         );
+      
+      default:
+        return <></>;
     }
   };
 
