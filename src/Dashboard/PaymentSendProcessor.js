@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, Row, Col, Table, OverlayTrigger, Popover, ListGroup, Badge } from 'react-bootstrap';
+import { Form, Row, Col, Table, OverlayTrigger, Popover, ListGroup, Badge, Spinner } from 'react-bootstrap';
 import LoadingButton from '../components/LoadingButton';
 
 const PROCESSOR_NAMES = {
@@ -109,13 +109,14 @@ export default class PaymentSendProcessor extends Component {
                     <OverlayTrigger
                       placement="left"
                       key={i}
-                      overlay={(props) => this.renderTooltip(props, i, proc.id)}>
-                    <td value={i} onClick={this.select}>
-                      { PROCESSOR_NAMES[proc.id] } 
-                      { this.getComment(i) }
-                    </td>
+                      overlay={(props) => this.renderTooltip(props, i, proc.id)}
+                    >
+                      <td value={i} onClick={this.select}>
+                        { PROCESSOR_NAMES[proc.id] } 
+                        { this.getComment(i) }
+                      </td>
                     </OverlayTrigger>
-                    <td value={i} onClick={this.select}>{mlProcessors[i+1] && mlProcessors[i+1].toFixed(5)}</td>
+                    <td value={i} onClick={this.select}>{mlProcessors[i+1] ? mlProcessors[i+1].toFixed(5) : <Spinner animation="border" size="sm" />}</td>
                     <td value={i} onClick={this.select}>{proc.score.toFixed(5)}</td>
                   </tr>)
                 }

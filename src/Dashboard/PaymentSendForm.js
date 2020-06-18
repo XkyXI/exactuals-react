@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Badge, Form, Row, Col, OverlayTrigger, Popover, Card, ListGroup, Button } from 'react-bootstrap';
 import LoadingButton from '../components/LoadingButton';
 import { getScoreColor, getStatusColor } from "./ColorUtils";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons"
 
 export default class PaymentSendForm extends Component {
   constructor(props) {
@@ -16,7 +18,7 @@ export default class PaymentSendForm extends Component {
 
   render() {
     const { ppinfo, values, handleChange } = this.props;
-    const { ppid, amount, method, memo } = values;
+    const { ppid, amount, method, memo, source_currency, target_currency } = values;
     
     const n = parseInt(ppid);
     let userinfo = n >= 0 ? ppinfo[n].info : {};
@@ -32,7 +34,6 @@ export default class PaymentSendForm extends Component {
               <Card.Body>
                 <Card.Title>
                   {userinfo.first_name + " " + userinfo.last_name}
-                  <Badge variant={addressinfo.country === "USA" ? "secondary" : "primary"}>FX</Badge>
                 </Card.Title>
                 <ListGroup variant="flush">
                   <ListGroup.Item>
@@ -78,7 +79,7 @@ export default class PaymentSendForm extends Component {
               <OverlayTrigger trigger="focus" placement="right" delay={{hide: 500}} overlay={popover}>
                 <Form.Control ref={this.ref} as="select" name="payee" value={ppid} onChange={handleChange("ppid")}>
                   <option value="" disabled style={{display: "none"}}>-- Select payee --</option>
-                  { ppinfo.map((ppif, i) => 
+                  { ppinfo && ppinfo.map((ppif, i) => 
                     <option key={ppif.ppid} value={i}>{ppif.info.first_name + " " + ppif.info.last_name}</option>
                   ) }
                 </Form.Control>
@@ -88,9 +89,43 @@ export default class PaymentSendForm extends Component {
 
           <Form.Group as={Row} controlId="formAmount">
             <Form.Label column sm={2}>Amount</Form.Label>
-            <Col className="currency-input-group" sm={10}>
+            <Col className="currency-symbol-input-group" sm={10}>
               <Form.Control required type="number" pattern="^\d*(\.\d{0,2})?$" placeholder="0.00" name="amount" min="0" step="0.01" value={amount} onChange={handleChange("amount")} />
               <i>$</i>
+            </Col>
+          </Form.Group>
+
+          <Form.Group as={Row} controlId="formCurrency">
+            <Form.Label column sm={2}>Currency</Form.Label>
+            <Col className="currency-input-group" sm={10}>
+            <Form.Row>
+              <Col xs={2}>
+                <Form.Control as="select" name="source-currency" value={source_currency} onChange={handleChange("source_currency")}>
+                  <option value="" disabled style={{display: "none"}}>-- Source --</option>
+                  <option value="840">$ (USD)</option>
+                  <option value="156">¥ (CNY)</option>
+                  <option value="978">€ (EUR)</option>
+                  <option value="826">£ (GBP)</option>
+                  <option value="643">₽ (RUB)</option>
+                  <option value="410">₩ (KRW)</option>
+                </Form.Control>
+              </Col>
+              <FontAwesomeIcon icon={faArrowRight} />
+              <Col xs={2}>
+                <Form.Control as="select" name="target-currency" value={target_currency} onChange={handleChange("target_currency")}>
+                  <option value="" disabled style={{display: "none"}}>-- Target --</option>
+                  <option value="840">$ (USD)</option>
+                  <option value="156">¥ (CNY)</option>
+                  <option value="978">€ (EUR)</option>
+                  <option value="826">£ (GBP)</option>
+                  <option value="643">₽ (RUB)</option>
+                  <option value="410">₩ (KRW)</option>
+                </Form.Control>
+              </Col>
+              { source_currency !== "" && target_currency !== "" && source_currency !== target_currency &&
+                  <Badge variant="primary">FX</Badge> 
+              }
+            </Form.Row>
             </Col>
           </Form.Group>
 
@@ -99,7 +134,6 @@ export default class PaymentSendForm extends Component {
             <Col sm={10}>
               <Form.Control as="select" name="method" value={method} onChange={handleChange("method")}>
                 <option value="" disabled style={{display: "none"}}>-- Select payment method --</option>
-                <option>ACH</option>
                 <option>IACH</option>
                 <option>Wire</option>
               </Form.Control>

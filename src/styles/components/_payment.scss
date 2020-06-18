@@ -7,7 +7,7 @@
     }
   }
 
-  .currency-input-group {
+  .currency-symbol-input-group {
     position: relative;
 
     > input {
@@ -23,6 +23,14 @@
       width: 25px;
       text-align: center;
       font-style: normal;
+    }
+  }
+
+  .currency-input-group {
+    svg, span {
+      margin: 0 5px;
+      margin-top: auto;
+      margin-bottom: auto;
     }
   }
 

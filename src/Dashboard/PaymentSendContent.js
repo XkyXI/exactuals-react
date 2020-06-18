@@ -17,6 +17,7 @@ const CTR_MAPPING = {
   USA: 840,
   China: 156,
   Europe: 250,
+  France: 250,
   Brazil: 76,
   Canada: 840,
   Mexico: 484,
@@ -37,6 +38,8 @@ export default class PaymentSend extends Component {
       amount: "",
       method: "",
       memo: "",
+      source_currency: "",
+      target_currency: "",
 
       // step 2
       processor: 0,
@@ -55,15 +58,19 @@ export default class PaymentSend extends Component {
   }
 
   changeProcessorScore() {
-    const { weight, ppid, amount } = this.state;
-    if (ppid === "" || amount === "") return;
+    const { weight, ppid, amount, source_currency, target_currency } = this.state;
+    if (ppid === "" || amount === "" || source_currency === "" || target_currency === "") return;
 
     const info = this.props.ppinfo[ppid];
 
     const ccode = CTR_MAPPING[info.address.country];
     const w = weight / 10;
-    const isFx = ccode === 840;
-    const result = process_payment(ccode, parseFloat(amount), isFx, 1.0 - w, w);
+    const isFx = source_currency === target_currency;
+    const source = parseInt(source_currency);
+    const target = parseInt(target_currency);
+    let amountF = parseFloat(amount);
+
+    const result = process_payment(ccode, amountF, isFx, 1.0 - w, w);
     let updatedProcessors = [];
     result.sorted_keys.forEach(proc => {
       updatedProcessors.unshift({ id: proc, score: result.processors[proc].final_score, info: result.processors[proc] });
@@ -71,11 +78,11 @@ export default class PaymentSend extends Component {
 
     this.setState({ processors: updatedProcessors });
 
-    const profits = get_profit(ccode, amount, isFx);
+    const profits = get_profit(ccode, amountF, isFx);
     let formData = new FormData();
-    formData.append("amount", amount);
-    formData.append("original_currency", 840);
-    formData.append("target_currency", ccode);
+    formData.append("amount", amountF);
+    formData.append("original_currency", source);
+    formData.append("target_currency", target);
     formData.append("payor_id", info.payor_id);
     formData.append("payee_id", info.payee_id);
     formData.append("payor_payee_id", info.ppid);
@@ -160,11 +167,11 @@ export default class PaymentSend extends Component {
   };
 
   showStep = () => {
-    const { step, weight, ppid, amount, method, memo, processor, processors, mlProcessors, status } = this.state;
+    const { step, weight, ppid, amount, method, memo, processor, processors, mlProcessors, status, source_currency, target_currency } = this.state;
     let name = "";
     if (ppid)
       name = this.props.ppinfo[parseInt(ppid)].info.first_name + " " + this.props.ppinfo[parseInt(ppid)].info.last_name;
-    const values = { name, ppid, amount, method, memo, processor, processors, weight };
+    const values = { name, ppid, amount, method, memo, processor, processors, weight, source_currency, target_currency };
 
     switch (step) {
       case 1:
